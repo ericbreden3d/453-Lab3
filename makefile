@@ -1,4 +1,4 @@
-lab2: run
+lab3: run
 
 run: comp
 	./lab3
