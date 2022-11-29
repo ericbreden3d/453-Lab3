@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     int this_coord[2];
     int neighbors[4] = {};
     int n = stoi(argv[1]);
-    int k = stoi(argv[2]);
+    // int k = stoi(argv[2]);
     int sub_n;
     int serial_result;
     double start;
@@ -38,7 +38,6 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &this_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
-    sub_n = n / sqrt(num_procs);
 
     MPI_Dims_create(num_procs, 2, dims);
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, true, &cart_comm);
@@ -59,7 +58,7 @@ int main(int argc, char** argv) {
         start = MPI_Wtime();
     }
 
-    cout << "I am " << this_rank << endl;
+    cout << "I am " << this_rank << " of " << num_procs << endl;
 
     MPI_Finalize();
 }
