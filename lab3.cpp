@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
         start = MPI_Wtime();
     }
 
-    cout << "I am " << this_rank << endl;
+    // cout << "I am " << this_rank << endl;
 
     MPI_Finalize();
 }
