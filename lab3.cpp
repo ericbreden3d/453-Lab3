@@ -52,12 +52,15 @@ int main(int argc, char** argv) {
         X = Matrix(n);
         X.fill_rand(1);
 
-        cout << "n = " << n << endl;
+        // cout << "n = " << n << endl;
+
+        X.print();
+        cout << "Coord: (2,1): " << X(2,1) << endl;
     
         start = MPI_Wtime();
     }
 
-    cout << "I am " << this_rank << " of " << num_procs << endl;
+    cout << "I am " << this_rank << endl;
 
     MPI_Finalize();
 }
