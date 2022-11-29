@@ -1,8 +1,8 @@
 lab2: run
 
 run: comp
-	./lab2
+	./lab3
 
 comp: lab2.cpp Matrix.cpp Matrix.h
-	mpicxx lab2.cpp Matrix.cpp -o lab2
+	mpicxx lab3.cpp Matrix.cpp -o lab3
 
