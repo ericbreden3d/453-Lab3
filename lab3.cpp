@@ -53,7 +53,6 @@ int main(int argc, char** argv) {
         X.fill_rand(1);
 
         cout << "n = " << n << endl;
-        cout << "k = " << k << endl;
     
         start = MPI_Wtime();
     }
