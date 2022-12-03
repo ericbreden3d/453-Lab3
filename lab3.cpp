@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
                 float cur_buf[n];
                 X.get_row(k, cur_buf);
-                for (int j = 0; j < n * 2; j++) {
+                for (int j = 0; j < n; j++) {
                     cout << cur_buf[j] << " ";
                 }
                 cout << endl;
