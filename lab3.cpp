@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
             // get base row i for this iter
             float base_buf[n];
             X.get_row(i, base_buf);
+            cout << "-> ";
             for (int j = 0; j < n; j++) {
                 cout << base_buf[j] << " ";
             }
