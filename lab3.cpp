@@ -70,10 +70,10 @@ int main(int argc, char** argv) {
 
                 float cur_buf[n];
                 X.get_row(k, cur_buf);
-                for (int j = 0; j < n * 2; j++) {
-                    cout << cur_buf[j] << " ";
-                }
-                cout << endl;
+                // for (int j = 0; j < n * 2; j++) {
+                //     cout << cur_buf[j] << " ";
+                // }
+                // cout << endl;
 
                 // send row i if haven't sent already then current row k
                 // MPI_Request req1, req2;
