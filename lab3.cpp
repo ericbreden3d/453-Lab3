@@ -26,7 +26,6 @@ int main(int argc, char** argv) {
     int sub_n;
     int serial_result;
     double start;
-    MPI_Comm cart_comm;
     MPI_Request req;
     MPI_Status stat;
     Matrix X;
@@ -36,8 +35,8 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &this_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
-    MPI_Dims_create(num_procs, 2, dims);
-    MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, true, &cart_comm);
+    // MPI_Dims_create(num_procs, 2, dims);
+    // MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, true, &cart_comm);
 
     // get new rank, cart coords, and amount of procs in each dim
     // MPI_Comm_rank(cart_comm, &this_rank);
@@ -51,19 +50,46 @@ int main(int argc, char** argv) {
         X.print();
         start = MPI_Wtime();
 
+        // algo
         for (int i = 0; i < n; i++) {
+            // get base row i for this iter
+            float base_buf[n];
+            X.get_row(i, base_buf);
+            for (int j = 0; j < n * 2; j++) {
+                cout << base_buf[j] << " ";
+            }
+            cout << endl;
+
+            // send
             for (int k = i + 1; k < n; k++) {
                 if (X(i, k) == 0) {
                     continue;
                 }
-                float buf[n];
-                X.get_row(k, buf);
-                for (int j = 0; j < n; j++) {
-                    cout << buf[j] << " ";
+
+                int dest = (k - 1) % num_procs + 1;
+
+                float cur_buf[n];
+                X.get_row(k, cur_buf);
+                for (int j = 0; j < n * 2; j++) {
+                    cout << cur_buf[j] << " ";
                 }
                 cout << endl;
+
+                // send row i if haven't sent already then current row k
+                MPI_Request req1, req2;
+                if (k < num_procs) {
+                    MPI_Isend(base_buf, n, MPI_FLOAT, dest, MPI_COMM_WORLD, &req1);
+                }
+                MPI_Isend(cur_buf, n, MPI_FLOAT, dest, MPI_COMM_WORLD, &req2);
+                
+                // ensure buffers copied before they go out of scope
+                MPI_Wait(&req1, &stat);
+                MPI_Wait(&req2, &stat);
             }
             cout << endl;
+
+            // receive and update LU
+            // for k = i + 1
         }
     }
 
