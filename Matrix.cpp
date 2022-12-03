@@ -22,7 +22,7 @@ Matrix Matrix::get_detrm_subm(int split) {
     return new_m;
 }
 
-int Matrix::detrm_helper(Matrix& m) {
+float Matrix::detrm_helper(Matrix& m) {
     if (m.size == 1) {
         return m(0, 0);
     }
@@ -55,10 +55,10 @@ Matrix::Matrix() {
 Matrix::Matrix(int n) {
     // cout << "Creating matrix" << endl;
     size = n;
-    matrix = new int*[size];
-    arr = new int[size * size];
+    matrix = new float*[size];
+    arr = new float[size * size];
     for (int i = 0; i < size; i++) {
-        matrix[i] = new int[size];
+        matrix[i] = new float[size];
         for (int j = 0; j < size; j++) {
             matrix[i][j] = 0;
             arr[i + j * size] = 0;
@@ -66,36 +66,14 @@ Matrix::Matrix(int n) {
     }
 }
 
-Matrix::Matrix(int* buf, int size) {
-    this->size = size;
-    int len = size * size;
-    matrix = new int*[size];
-    for (int i = 0; i < size; i++) {
-        matrix[i] = new int[size];
-    }
-    arr = new int[len];
-    int i = 0;
-    int j = 0;
-    for (int ind = 0; ind < len; ind++) {
-        // cout << i << " " << j << ind << " " << buff[ind] << endl;
-        matrix[i][j] = buf[ind];
-        arr[i + j * size] = buf[ind];
-        if (i == size - 1) {
-            j++;
-            i = 0;
-        } else {
-            i++;
-        }
-    }
-}
 
 Matrix::Matrix(const Matrix& other) {
     // cout << "Copy Constructor Called" << endl;
     size = other.size;
-    matrix = new int*[size];
-    arr = new int[size * size];
+    matrix = new float*[size];
+    arr = new float[size * size];
     for (int i = 0; i < size; i++) {
-        matrix[i] = new int[size];
+        matrix[i] = new float[size];
         for (int j = 0; j < size; j++) {
             matrix[i][j] = other.matrix[i][j];
             arr[i + j * size] = other.matrix[i][j];
@@ -121,7 +99,7 @@ void Matrix::fill_rand(int seed = -1) {
     srand(seed == -1 ? time(NULL) : seed);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            int r = 3 - rand() % 4;
+            int r = rand() % 9 + 1;
             matrix[i][j] = r;
             arr[i + j * size] = r;
         }
@@ -163,10 +141,10 @@ Matrix& Matrix::operator=(const Matrix& other) {
     }
 
     size = other.size;
-    matrix = new int*[size];
-    arr = new int[size * size];
+    matrix = new float*[size];
+    arr = new float[size * size];
     for (int i = 0; i < size; i++) {
-        matrix[i] = new int[size];
+        matrix[i] = new float[size];
         for (int j = 0; j < size; j++) {
             matrix[i][j] = other.matrix[i][j];
             arr[i + j * size] = other.matrix[i][j];
@@ -195,16 +173,22 @@ void Matrix::add_subm(Matrix& sub, int len, int x, int y) {
     }
 }
 
-int* Matrix::get_1d() {
+void Matrix::get_row(int r, float* buf) {
+    for (int i = 0; i < size; i++) {
+        buf[i] = matrix[r][i];
+    }
+}
+
+float* Matrix::get_1d() {
     return arr;
 }
 
-int Matrix::determinant() {
+float Matrix::determinant() {
     int result = detrm_helper(*this);
     return result;
 }
 
-int& Matrix::operator()(int x, int y) {
+float& Matrix::operator()(int x, int y) {
     return matrix[x][y];
 }
 

@@ -30,10 +30,7 @@ int main(int argc, char** argv) {
     MPI_Request req;
     MPI_Status stat;
     Matrix X;
-    Matrix multA;
-    Matrix multB;
-    Matrix A;
-    Matrix B;
+
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &this_rank);
@@ -51,16 +48,28 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n
         X = Matrix(n);
         X.fill_rand(1);
-
-        // cout << "n = " << n << endl;
-
         X.print();
-        cout << "Coord: (2,1): " << X(2,1) << endl;
-    
         start = MPI_Wtime();
+
+        for (int i = 0; i < n; i++) {
+            for (int k = i + 1; k < n - 1; k++) {
+                if (X(i, k) == 0) {
+                    continue;
+                }
+                float* buf[n];
+                X.get_row(k, buf);
+                for (int j = 0; j < n; j++) {
+                    cout << buf[i] << " ";
+                }
+                cout << endl;
+            }
+        }
     }
 
-    // cout << "I am " << this_rank << endl;
+
+
+
+    
 
     MPI_Finalize();
 }
