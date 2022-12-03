@@ -76,15 +76,15 @@ int main(int argc, char** argv) {
                 cout << endl;
 
                 // send row i if haven't sent already then current row k
-                MPI_Request req1, req2;
-                if (k < num_procs) {
-                    MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
-                }
-                MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
+                // MPI_Request req1, req2;
+                // if (k < num_procs) {
+                //     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
+                // }
+                // MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
                 
-                // ensure buffers copied before they go out of scope
-                MPI_Wait(&req1, &stat);
-                MPI_Wait(&req2, &stat);
+                // // ensure buffers copied before they go out of scope
+                // MPI_Wait(&req1, &stat);
+                // MPI_Wait(&req2, &stat);
             }
             cout << endl;
 
