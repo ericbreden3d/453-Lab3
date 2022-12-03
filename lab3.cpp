@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
         start = MPI_Wtime();
 
         for (int i = 0; i < n; i++) {
-            for (int k = i + 1; k < n - 1; k++) {
+            for (int k = i + 1; k < n; k++) {
                 if (X(i, k) == 0) {
                     continue;
                 }
