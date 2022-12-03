@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
         start = MPI_Wtime();
 
         // algo
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n - 1; i++) {
             // get base row i for this iter
             float base_buf[n];
             X.get_row(i, base_buf);
