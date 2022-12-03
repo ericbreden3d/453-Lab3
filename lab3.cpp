@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
                 float buf[n];
                 X.get_row(k, buf);
                 for (int j = 0; j < n; j++) {
-                    cout << buf[i] << " ";
+                    cout << buf[j] << " ";
                 }
                 cout << endl;
             }
