@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
         }
 
         // L.print();
-        // A.print();
+        A.print();
         // int det_L = L.determinant();
         int det_U = A.determinant();
         cout << "Serial Result: " << serial_result << endl;
