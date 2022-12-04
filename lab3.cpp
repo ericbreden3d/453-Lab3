@@ -109,6 +109,11 @@ int main(int argc, char** argv) {
             }
         }
 
+        // add 1s to diagonal of L
+        for (int i = 0; i < n; i++) {
+            L(i, i) = 1;
+        }
+
         L.print();
         A.print();
         cout << "Serial Result: " << serial_result << endl;
