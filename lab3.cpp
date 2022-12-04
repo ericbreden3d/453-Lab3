@@ -110,13 +110,13 @@ int main(int argc, char** argv) {
                 // receive base row for iteration i if haven't already
                 if (k < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    cout << "->";
-                    if (this_rank == 3)
-                        for (int j = 0; j < n; j++) {
-                            cout << base_buf[j] << " ";
-                        }
-                        cout << endl;
-                    }
+                    // cout << "->";
+                    // if (this_rank == 3)
+                    //     for (int j = 0; j < n; j++) {
+                    //         cout << base_buf[j] << " ";
+                    //     }
+                    //     cout << endl;
+                    // }
                 }
 
                 // receicve cur row k
@@ -127,12 +127,12 @@ int main(int argc, char** argv) {
                     // calc and send back
 
                     // debug
-                    if (this_rank == 3)
-                        for (int j = 0; j < n; j++) {
-                            cout << cur_buf[j] << " ";
-                        }
-                        cout << endl;
-                    }
+                    // if (this_rank == 3)
+                    //     for (int j = 0; j < n; j++) {
+                    //         cout << cur_buf[j] << " ";
+                    //     }
+                    //     cout << endl;
+                    // }
                 }
             }
         }
