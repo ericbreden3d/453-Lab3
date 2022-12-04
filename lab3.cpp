@@ -125,9 +125,7 @@ int main(int argc, char** argv) {
                 if (recv_proc != this_rank) {
                     continue;
                 }
-
-                // if (this_rank == 3) cout << "doing row 3\n\n";
-                
+                            
                 // receive base row for iteration i if haven't already
                 if (k < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
