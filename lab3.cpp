@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     int sub_n;
     int serial_result;
     double start;
-    MPI_Request req;
+    // MPI_Request req;
     MPI_Status stat;
     Matrix X;
 
@@ -88,10 +88,29 @@ int main(int argc, char** argv) {
                 // ensure buffers copied before they go out of scope
                 MPI_Wait(&req1, &stat);
                 MPI_Wait(&req2, &stat);
-
-                // loop -> recv and update
+                }
             }
             cout << endl;
+
+            // loop -> recv and update
+            for (int k = i + 1; k < n; k++) {
+                if (X(i, k) == 0) {
+                    continue;
+                }
+
+                int dest = (k - 1) % num_procs + 1;
+                
+                float cur_buf[n];
+                MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
+                
+                if (dest == 2) {
+                    for (int j = 0; j < n; j++) {
+                        cout << cur_buf[j] << " ";
+                    }
+                    cout << endl;
+                }
+
+            }
 
             // receive and update LU
             // for k = i + 1
@@ -110,13 +129,13 @@ int main(int argc, char** argv) {
                 // receive base row for iteration i if haven't already
                 if (k < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    if (this_rank == 2) {
-                        cout << "->";
-                        for (int j = 0; j < n; j++) {
-                            cout << base_buf[j] << " ";
-                        }
-                        cout << endl;
-                    }
+                    // if (this_rank == 2) {
+                    //     cout << "->";
+                    //     for (int j = 0; j < n; j++) {
+                    //         cout << base_buf[j] << " ";
+                    //     }
+                    //     cout << endl;
+                    // }
                 }
 
                 // receicve cur row k
@@ -129,14 +148,18 @@ int main(int argc, char** argv) {
                     for (int j = i + 1; j < n; j++) {
                         cur_buf[j] = cur_buf[j] - base_buf[j] * cur_buf[i];
                     }
+                    
+                    MPI_Request req;
+                    MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+                    MPI_Wait(&req, &stat);
 
                     // debug
-                    if (this_rank == 2) {
-                        for (int j = 0; j < n; j++) {
-                            cout << cur_buf[j] << " ";
-                        }
-                        cout << endl;
-                    }
+                    // if (this_rank == 2) {
+                    //     for (int j = 0; j < n; j++) {
+                    //         cout << cur_buf[j] << " ";
+                    //     }
+                    //     cout << endl;
+                    // }
                 }
             }
         }
