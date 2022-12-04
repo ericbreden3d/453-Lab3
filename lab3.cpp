@@ -107,12 +107,13 @@ int main(int argc, char** argv) {
 
                 
             }
-
-            L.print();
-            A.print();
-            cout << "Serial Result: " << serial_result << endl;
-            cout << "Parallel Result: " << L.determinant() * A.determinant() << endl;
         }
+
+        L.print();
+        A.print();
+        cout << "Serial Result: " << serial_result << endl;
+        cout << "Parallel Result: " << L.determinant() * A.determinant() << endl;
+
     } else {
         // child logic
         for (int i = 0; i < n - 1; i++) {
