@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
             for (int k = i + 1; k < n; k++) {
                 if (X(i, k) == 0) {
                     continue;
-                }
+                } 
 
                 int dest = (k - 1) % num_procs + 1;
 
