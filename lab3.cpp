@@ -76,27 +76,27 @@ int main(int argc, char** argv) {
             cout << endl;
 
             // loop -> recv and update
-            // for (int k = i + 1; k < n; k++) {
-            //     if (X(i, k) == 0) {
-            //         continue;
-            //     }
+            for (int k = i + 1; k < n; k++) {
+                if (X(i, k) == 0) {
+                    continue;
+                }
 
-            //     int dest = (k - 1) % num_procs + 1;
+                int dest = (k - 1) % num_procs + 1;
                 
-            //     float cur_buf[n];
-            //     MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
+                float cur_buf[n];
+                MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
                 
-            //     // if (dest == 2) {
-            //     //     for (int j = 0; j < n; j++) {
-            //     //         cout << cur_buf[j] << " ";
-            //     //     }
-            //     //     cout << endl;
-            //     // }
+                if (dest == 2) {
+                    for (int j = 0; j < n; j++) {
+                        cout << cur_buf[j] << " ";
+                    }
+                    cout << endl;
+                }
 
-            // }
+            }
 
-            // receive and update LU
-            // for k = i + 1
+            receive and update LU
+            for k = i + 1
         }
     } else {
         // child logic
