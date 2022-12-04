@@ -56,12 +56,10 @@ Matrix::Matrix(int n) {
     // cout << "Creating matrix" << endl;
     size = n;
     matrix = new float*[size];
-    arr = new float[size * size];
     for (int i = 0; i < size; i++) {
         matrix[i] = new float[size];
         for (int j = 0; j < size; j++) {
             matrix[i][j] = 0;
-            arr[i + j * size] = 0;
         }
     }
 }
@@ -71,12 +69,10 @@ Matrix::Matrix(const Matrix& other) {
     // cout << "Copy Constructor Called" << endl;
     size = other.size;
     matrix = new float*[size];
-    arr = new float[size * size];
     for (int i = 0; i < size; i++) {
         matrix[i] = new float[size];
         for (int j = 0; j < size; j++) {
             matrix[i][j] = other.matrix[i][j];
-            arr[i + j * size] = other.matrix[i][j];
         }
     }
 }
@@ -91,7 +87,6 @@ Matrix::~Matrix() {
         delete[] matrix[i];
     }
     delete[] matrix;
-    delete[] arr;
 }
 
 void Matrix::fill_rand(int seed = -1) {
@@ -101,7 +96,6 @@ void Matrix::fill_rand(int seed = -1) {
         for (int j = 0; j < size; j++) {
             int r = rand() % 9 + 1;
             matrix[i][j] = r;
-            arr[i + j * size] = r;
         }
     }
 }
@@ -137,17 +131,14 @@ Matrix& Matrix::operator=(const Matrix& other) {
             delete[] matrix[i];
         }
         delete[] matrix;
-        delete[] arr;
     }
 
     size = other.size;
     matrix = new float*[size];
-    arr = new float[size * size];
     for (int i = 0; i < size; i++) {
         matrix[i] = new float[size];
         for (int j = 0; j < size; j++) {
             matrix[i][j] = other.matrix[i][j];
-            arr[i + j * size] = other.matrix[i][j];
         }
     }
     return *this;
@@ -158,7 +149,6 @@ Matrix Matrix::get_subm(int len, int x, int y) {
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < len; j++) {
             new_m(i, j) = (*this)(i + x, j + y);
-            new_m.arr[i + j * len] = (*this)(i + x, j + y);
         }
     }
     return new_m;
@@ -168,7 +158,6 @@ void Matrix::add_subm(Matrix& sub, int len, int x, int y) {
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < len; j++) {
             (*this)(i + x, j + y) = sub(i, j);
-            this->arr[(i + x) + (j + y) * len] = sub(i, j);
         }
     }
 }
@@ -177,10 +166,6 @@ void Matrix::get_row(int r, float* buf) {
     for (int i = 0; i < size; i++) {
         buf[i] = matrix[r][i];
     }
-}
-
-float* Matrix::get_1d() {
-    return arr;
 }
 
 float Matrix::determinant() {
