@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
         // child logic
         for (int i = 0; i < n - 1; i++) {
             float base_buf[n];
-            for (k = i + 1; k < n; k++) {
+            for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs + 1;
                 if (recv_proc != this_rank) {
