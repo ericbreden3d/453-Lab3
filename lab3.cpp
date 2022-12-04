@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n
         X = Matrix(n);
         X.fill_rand(1);
-        X.print();
+        // X.print();
         start = MPI_Wtime();
 
         // algo
