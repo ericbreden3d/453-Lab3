@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 
                 // update L with multiplier stored at row[i].
                 // Then set to 0 in row and add row to U (A becomes U)
-                L(i, k) = cur_buf[i];
+                L(k, i) = cur_buf[i];
                 cur_buf[i] = 0;
                 for (int j = 0; j < n; j++) {
                     A(i, j) = cur_buf[j];
