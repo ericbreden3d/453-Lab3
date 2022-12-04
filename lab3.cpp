@@ -21,7 +21,6 @@ int main(int argc, char** argv) {
     int serial_result;
     double start;
     MPI_Status stat;
-    Matrix X;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &this_rank);
@@ -29,16 +28,17 @@ int main(int argc, char** argv) {
 
     if (this_rank == 0) {
         // create initial randomized matrix of size n
-        X = Matrix(n);
-        X.fill_rand(1);
-        X.print();
+        Matrix A(n);
+        A.fill_rand(1);
+        A.print();
         start = MPI_Wtime();
 
         // algo
+        Matrix L(n);
         for (int i = 0; i < n - 1; i++) {
             // get base row i for this iter
             float base_buf[n];
-            X.get_row(i, base_buf);
+            A.get_row(i, base_buf);
 
             // cout << "-> ";
             // for (int j = 0; j < n; j++) {
@@ -48,14 +48,14 @@ int main(int argc, char** argv) {
 
             // send
             for (int k = i + 1; k < n; k++) {
-                if (X(i, k) == 0) {
+                if (A(i, k) == 0) {
                     continue;
                 } 
 
                 int dest = (k - 1) % num_procs + 1;
 
                 float cur_buf[n];
-                X.get_row(k, cur_buf);
+                A.get_row(k, cur_buf);
 
                 // for (int j = 0; j < n; j++) {
                 //     cout << cur_buf[j] << " ";
@@ -77,26 +77,34 @@ int main(int argc, char** argv) {
 
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
-                if (X(i, k) == 0) {
+                if (A(i, k) == 0) {
                     continue;
                 }
 
                 int dest = (k - 1) % num_procs + 1;
                 
+                // receive modified row
                 float cur_buf[n];
                 MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
-                
-                if (dest == 2) {
-                    for (int j = 0; j < n; j++) {
-                        cout << cur_buf[j] << " ";
-                    }
-                    cout << endl;
+
+                // update L with multiplier stored at row[i].
+                // Then set to 0 in row and add row to U (A becomes U)
+                L(i, k) = cur_buf[i];
+                cur_buf[i] = 0;
+                for (int j = 0; j < n; j++) {
+                    A(i, j) = cur_buf[j];
                 }
+                
+                // if (dest == 2) {
+                //     for (int j = 0; j < n; j++) {
+                //         cout << cur_buf[j] << " ";
+                //     }
+                //     cout << endl;
+                // }
 
+                L.print();
+                U.print();
             }
-
-            // receive and update LU
-            // for k = i + 1
         }
     } else {
         // child logic

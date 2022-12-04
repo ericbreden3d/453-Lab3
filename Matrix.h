@@ -1,6 +1,5 @@
 class Matrix {
     float** matrix;
-    float* arr;  // also maintain 1-D array for sending and receiving
     int size;
     Matrix get_detrm_subm(int split);   // get sub-matrix without split column for determinant
     float detrm_helper(Matrix& m);   // for determinant()
@@ -13,7 +12,6 @@ class Matrix {
     Matrix get_subm(int len, int x, int y);   // return sub-matrix of length len at location x,y
     void add_subm(Matrix& sub, int len, int x, int y);   // add sub-matrix to matrix at location x,y
     void get_row(int r, float* buf);  // return row r
-    float* get_1d();  // return 1D array representation of matrix
     float determinant();  // use detrm_helper to recursvely find determinant of matrix
     Matrix operator*(const Matrix& other);   // basic O(n^3) matrix multiplication algorithm
     Matrix operator+(const Matrix& other);
