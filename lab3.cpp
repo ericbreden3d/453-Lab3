@@ -95,8 +95,8 @@ int main(int argc, char** argv) {
 
             }
 
-            receive and update LU
-            for k = i + 1
+            // receive and update LU
+            // for k = i + 1
         }
     } else {
         // child logic
