@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     if (this_rank == 0) {
         // create initial randomized matrix of size n
         Matrix A(n);
-        A.fill_rand();
+        A.fill_rand(-1);
         A.print();
         float serial_result = A.determinant();
         start = MPI_Wtime();
