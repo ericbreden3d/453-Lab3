@@ -53,7 +53,6 @@ int main(int argc, char** argv) {
                 } 
 
                 int dest = (k - 1) % (num_procs - 1) + 1;
-                cout << "k: " << k << ", np: " << num_procs << ", dest: " << dest << endl;
 
                 float cur_buf[n];
                 A.get_row(k, cur_buf);
@@ -82,7 +81,7 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                int dest = (k - 1) % num_procs + 1;
+                int dest = (k - 1) % (num_procs - 1) + 1;
                 
                 // receive modified row
                 float cur_buf[n];
