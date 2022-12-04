@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
 
     if (this_rank == 0) {
         // create initial randomized matrix of size n
+        cout << "n = " << n << endl;
         Matrix A(n);
         A.fill_rand(-1);
         A.print();
