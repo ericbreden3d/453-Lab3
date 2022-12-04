@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
                 // }
 
                 L.print();
-                U.print();
+                A.print();
             }
         }
     } else {
