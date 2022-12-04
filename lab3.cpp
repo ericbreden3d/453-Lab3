@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
         }
     } else {
         // child logic
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < 1; i++) {
             float base_buf[n];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
