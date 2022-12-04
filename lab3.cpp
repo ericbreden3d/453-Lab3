@@ -107,6 +107,9 @@ int main(int argc, char** argv) {
 
                 
             }
+
+            L.print();
+            A.print();
             cout << "Serial Result: " << serial_result << endl;
             cout << "Parallel Result: " << L.determinant() * A.determinant() << endl;
         }
