@@ -108,12 +108,13 @@ int main(int argc, char** argv) {
                 }
                 
                 // receive base row for iteration i if haven't already
-                cout << "->";
                 if (k < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                    cout << "->";
                     for (int j = 0; j < n; j++) {
                         cout << base_buf[i] << " ";
                     }
+                    cout << endl;
                 }
 
                 // receicve cur row k
@@ -127,6 +128,7 @@ int main(int argc, char** argv) {
                     for (int j = 0; j < n; j++) {
                         cout << cur_buf[i] << " ";
                     }
+                    cout << endl;
                 }
             }
         }
