@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
                     // calc and send back
 
                     // debug
-                    if (this_rank == 3)
+                    if (this_rank == 3) {
                         for (int j = 0; j < n; j++) {
                             cout << cur_buf[j] << " ";
                         }
