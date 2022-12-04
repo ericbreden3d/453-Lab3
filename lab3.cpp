@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                     cout << "->";
                     for (int j = 0; j < n; j++) {
-                        cout << base_buf[i] << " ";
+                        cout << base_buf[j] << " ";
                     }
                     cout << endl;
                 }
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
 
                     // debug
                     for (int j = 0; j < n; j++) {
-                        cout << cur_buf[i] << " ";
+                        cout << cur_buf[j] << " ";
                     }
                     cout << endl;
                 }
