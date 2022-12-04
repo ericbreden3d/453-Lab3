@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
                     continue;
                 } 
 
-                int dest = (k - 1) % num_procs + 1;
+                int dest = (k - 1) % (num_procs - 1) + 1;
                 cout << "k: " << k << ", np: " << num_procs << ", dest: " << dest << endl;
 
                 float cur_buf[n];
