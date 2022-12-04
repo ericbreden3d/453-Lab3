@@ -103,12 +103,12 @@ int main(int argc, char** argv) {
                 float cur_buf[n];
                 MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
                 
-                if (dest == 2) {
-                    for (int j = 0; j < n; j++) {
-                        cout << cur_buf[j] << " ";
-                    }
-                    cout << endl;
-                }
+                // if (dest == 2) {
+                //     for (int j = 0; j < n; j++) {
+                //         cout << cur_buf[j] << " ";
+                //     }
+                //     cout << endl;
+                // }
 
             }
 
