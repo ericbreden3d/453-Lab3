@@ -95,48 +95,42 @@ int main(int argc, char** argv) {
 
             // receive and update LU
             // for k = i + 1
-        } else {
-
-            // child logic
-            for (int i = 0; i < n - 1; i++) {
-                float base_buf[n];
-                for (int k = i + 1; k < n; k++) {
-                    // dont't proceed unless this proc is needed
-                    int recv_proc = (k - 1) % num_procs + 1;
-                    if (recv_proc != this_rank) {
-                        continue;
+        }
+    } else {
+        // child logic
+        for (int i = 0; i < n - 1; i++) {
+            float base_buf[n];
+            for (int k = i + 1; k < n; k++) {
+                // dont't proceed unless this proc is needed
+                int recv_proc = (k - 1) % num_procs + 1;
+                if (recv_proc != this_rank) {
+                    continue;
+                }
+                
+                // receive base row for iteration i if haven't already
+                cout << "->";
+                if (k < num_procs) {
+                    MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                    for (int j = 0; j < n; j++) {
+                        cout << base_buf[i] << " ";
                     }
-                    
-                    // receive base row for iteration i if haven't already
-                    cout << "->";
-                    if (k < num_procs) {
-                        MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                        for (int j = 0; j < n; j++) {
-                            cout << base_buf[i] << " ";
-                        }
-                    }
+                }
 
-                    // receicve cur row k
-                    if (recv_proc == this_rank) {
-                        float cur_buf[n];
-                        MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                // receicve cur row k
+                if (recv_proc == this_rank) {
+                    float cur_buf[n];
+                    MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
 
-                        // calc and send back
+                    // calc and send back
 
-                        // debug
-                        for (int j = 0; j < n; j++) {
-                            cout << cur_buf[i] << " ";
-                        }
+                    // debug
+                    for (int j = 0; j < n; j++) {
+                        cout << cur_buf[i] << " ";
                     }
                 }
             }
         }
     }
-
-
-
-
-    
 
     MPI_Finalize();
 }
