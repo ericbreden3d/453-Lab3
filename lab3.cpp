@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
             float base_buf[n];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
-                int recv_proc = (k - 1) % num_procs + 1;
+                int recv_proc = (k - 1) % (num_procs - 1) + 1;
                 if (recv_proc != this_rank) {
                     continue;
                 }
