@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
                 L(k, i) = cur_buf[i];
                 cur_buf[i] = 0;
                 for (int j = 0; j < n; j++) {
-                    A(i, j) = cur_buf[j];
+                    A(k, j) = cur_buf[j];
                 }
                 
                 // if (dest == 2) {
