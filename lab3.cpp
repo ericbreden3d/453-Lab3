@@ -16,11 +16,11 @@ void get_dim_counts(int m, MPI_Comm comm, int* dims_arr) {
 int main(int argc, char** argv) {    
     int this_rank;
     int num_procs;
-    int dims[2] = {0, 0};
-    int dim_counts[2];
-    int periods[2] = {true, true};
-    int this_coord[2];
-    int neighbors[4] = {};
+    // int dims[2] = {0, 0};
+    // int dim_counts[2];
+    // int periods[2] = {true, true};
+    // int this_coord[2];
+    // int neighbors[4] = {};
     int n = stoi(argv[1]);
     // int k = stoi(argv[2]);
     int sub_n;
@@ -55,11 +55,12 @@ int main(int argc, char** argv) {
             // get base row i for this iter
             float base_buf[n];
             X.get_row(i, base_buf);
-            cout << "-> ";
-            for (int j = 0; j < n; j++) {
-                cout << base_buf[j] << " ";
-            }
-            cout << endl;
+
+            // cout << "-> ";
+            // for (int j = 0; j < n; j++) {
+            //     cout << base_buf[j] << " ";
+            // }
+            // cout << endl;
 
             // send
             for (int k = i + 1; k < n; k++) {
@@ -71,26 +72,63 @@ int main(int argc, char** argv) {
 
                 float cur_buf[n];
                 X.get_row(k, cur_buf);
-                for (int j = 0; j < n; j++) {
-                    cout << cur_buf[j] << " ";
-                }
-                cout << endl;
+
+                // for (int j = 0; j < n; j++) {
+                //     cout << cur_buf[j] << " ";
+                // }
+                // cout << endl;
 
                 // send row i if haven't sent already then current row k
-                // MPI_Request req1, req2;
-                // if (k < num_procs) {
-                //     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
-                // }
-                // MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
+                MPI_Request req1, req2;
+                if (k < num_procs) {
+                    MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
+                }
+                MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
                 
-                // // ensure buffers copied before they go out of scope
-                // MPI_Wait(&req1, &stat);
-                // MPI_Wait(&req2, &stat);
+                // ensure buffers copied before they go out of scope
+                MPI_Wait(&req1, &stat);
+                MPI_Wait(&req2, &stat);
+
+                // loop -> recv and update
             }
             cout << endl;
 
             // receive and update LU
             // for k = i + 1
+        }
+
+        // child logic
+        for (int i = 0; i < n - 1; i++) {
+            float base_buf[n];
+            for (k = i + 1; k < n; k++) {
+                // dont't proceed unless this proc is needed
+                int recv_proc = (k - 1) % num_procs + 1;
+                if (recv_proc != this_rank) {
+                    continue;
+                }
+                
+                // receive base row for iteration i if haven't already
+                cout << "->";
+                if (k < num_procs) {
+                    MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                    for (int j = 0; j < n; j++) {
+                        cout << base_buf[i] << " ";
+                    }
+                }
+
+                // receicve cur row k
+                if (recv_proc == this_rank) {
+                    float cur_buf[n];
+                    MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+
+                    // calc and send back
+
+                    // debug
+                    for (int j = 0; j < n; j++) {
+                        cout << cur_buf[i] << " ";
+                    }
+                }
+            }
         }
     }
 
