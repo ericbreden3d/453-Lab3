@@ -125,6 +125,10 @@ int main(int argc, char** argv) {
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
 
                     // calc and send back
+                    cur_buf[i] = cur_buf[i] / base_buf[i];
+                    for (int j = i + 1; j < n; j++) {
+                        cur_buf[j] = cur_buf[j] - base_buf[j] * cur_buf[i];
+                    }
 
                     // debug
                     if (this_rank == 3) {
