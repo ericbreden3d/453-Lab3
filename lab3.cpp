@@ -18,7 +18,6 @@ int main(int argc, char** argv) {
     int num_procs;
     int n = stoi(argv[1]);
     int sub_n;
-    int serial_result;
     double start;
     MPI_Status stat;
 
@@ -31,6 +30,7 @@ int main(int argc, char** argv) {
         Matrix A(n);
         A.fill_rand(1);
         A.print();
+        float serial_result = A.determinant();
         start = MPI_Wtime();
 
         // algo
@@ -102,9 +102,13 @@ int main(int argc, char** argv) {
                 //     cout << endl;
                 // }
 
-                L.print();
-                A.print();
+                // L.print();
+                // A.print();
+
+                
             }
+            cout << "Serial Result: " << serial_result << endl;
+            cout << "Parallel Result: " << L.determinant() * A.determinant() << endl;
         }
     } else {
         // child logic
