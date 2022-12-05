@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
                 MPI_Wait(&req1, &stat);
                 MPI_Wait(&req2, &stat);
             }
-            cout << endl;
+            // cout << endl;
 
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
