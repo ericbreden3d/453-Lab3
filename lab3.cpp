@@ -55,10 +55,10 @@ int main(int argc, char** argv) {
             int base_sent[num_procs] = {};
             int root_ind = 0;
             for (int k = i + 1; k < n; k++) {
-                if (A(i, k) == 0) {
-                    cout << "ZERO" << endl;
-                    continue;
-                } 
+                // if (A(i, k) == 0) {
+                //     cout << "ZERO" << endl;
+                //     continue;
+                // } 
 
                 int dest = (k - 1) % num_procs;
 
@@ -86,6 +86,7 @@ int main(int argc, char** argv) {
 
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
+                // first elem of row sent to child already 0, so it will not respond
                 if (A(i, k) == 0) {
                     cout << "ZERO" << endl;
                     continue;
@@ -164,8 +165,12 @@ int main(int argc, char** argv) {
                 // cout << this_rank << "-" << k << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                 // cout << this_rank << "==" << k << endl;
-                if (stat.MPI_ERROR != 0)
-                    cout << "ERROR" << endl;
+
+                // received already zeroed row, ignore
+                if (cur_buf[i] == 0) {
+                    continue;
+                }
+
                 // calculate multiplier, subtract row, and send back
                 calc_row(i, n, base_buf, cur_buf);
                 
