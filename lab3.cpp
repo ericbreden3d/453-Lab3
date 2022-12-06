@@ -151,8 +151,8 @@ int main(int argc, char** argv) {
                 // async receicve cur row k from root
                 // float cur_buf[n];
                 MPI_Request rreq;
-                MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &rreq);
-                MPI_Wait(&rreq, &stat);
+                MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
+                MPI_Wait(&reqs[k], &stat);
 
                 if (cur_buf[i] == 0) {
                     continue;
