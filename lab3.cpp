@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
                 // if ith elem was already 0, child is set to not respond
                 if (U(k, i) != 0) {
                     // MPI_Irecv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &reqs[k]);
-                    MPI_Recv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD);
+                    MPI_Recv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &stat);
                 }
             }
 
@@ -155,11 +155,11 @@ int main(int argc, char** argv) {
                 MPI_Recv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                 // MPI_Wait(&reqs[k], &stat);
 
-                if (cur_buf[i] == 0) {
+                if (my_data[k][i] == 0) {
                     continue;
                 }
 
-                calc_row(i, n, base_buf, cur_buf);
+                calc_row(i, n, base_buf, my_data[k]);
                 
                 // send back to root
                 MPI_Request req;
