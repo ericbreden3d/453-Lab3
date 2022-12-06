@@ -151,16 +151,18 @@ int main(int argc, char** argv) {
                             
                 // receive base row for iteration i if haven't already
                 if (!base_recvd) {
-                    cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
+                    // cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    cout << "child " << this_rank << " received " << k << endl;
+                    // cout << "child " << this_rank << " received " << k << endl;
                     base_recvd = 1;
                 }
 
                 // receicve cur row k
                 if (recv_proc == this_rank) {
                     float cur_buf[n];
+                    cout << this_rank << "-" << k << endl;
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                    cout << this_rank << "==" << k << endl;
                     if (stat.MPI_ERROR != 0)
                         cout << "ERROR" << endl;
                     // calculate multiplier, subtract row, and send back
