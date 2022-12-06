@@ -153,7 +153,7 @@ int main(int argc, char** argv) {
                 // calc multiplier and store at ind i ->  Rk[i] = Rk[i] / Rb[i], 
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
                 // if row already zeroed out, ignore
-                // MPI_Wait(&reqs[k], &stat);  // ensure received
+                MPI_Wait(&reqs[k], &stat);  // ensure received
                 if (my_data[k][i] != 0) {
                     continue;
                 }
