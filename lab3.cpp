@@ -44,6 +44,8 @@ int main(int argc, char** argv) {
         U.print();
         // Matrix L(n);   // matrix L not needed for finding determinant
 
+        MPI_Barrier(MPI_COMM_WORLD);
+
         // start timer
         start = MPI_Wtime();
 
@@ -124,6 +126,9 @@ int main(int argc, char** argv) {
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
+
+        MPI_Barrier(MPI_COMM_WORLD);
+
         // child logic
         for (int i = 0; i < n - 1; i++) {
 
