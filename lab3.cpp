@@ -56,21 +56,22 @@ int main(int argc, char** argv) {
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
             // distribute
-            int root_rows[n - 1] = {};
             int base_sent[num_procs] = {};
+            int root_rows[n - 1] = {};
             int root_ind = 0;
+            int child_rows[n - 1] = {};
+            int child_ind = 0;
+            float child_data[n - 1][n] = {};
+            MPI_Request reqs[n - 1] = {};
             for (int k = i + 1; k < n; k++) {
                 int dest = (k - 1) % num_procs;
 
                 // if root's responsibility, store k
                 if (dest == 0) {
-                    if (A(k, i) == 0) {
-                        // cout << "root zero condition" << endl;
-                        continue;
-                    }
-                    // cout << "root responsible for " << k << endl;
                     root_rows[root_ind++] = k;
                     continue;
+                } else {
+                    child_rows[child_ind++] = k;
                 }
 
                 float cur_buf[n];
@@ -90,33 +91,35 @@ int main(int argc, char** argv) {
             }
 
             // loop -> recv and update
-            for (int k = i + 1; k < n; k++) {
-                // first elem of row sent to child already 0, so it will not respond
-                if (A(k, i) == 0) {
-                    cout << "ZERO" << endl;
-                    continue;
-                }
-
+            for (int j = 0; j < child_ind; j++) {
+                int k = child_rows[child_ind];
                 int dest = (k - 1) % num_procs;
 
-                // if root calculated this root, ignore
-                if (dest == 0) {
+                // first elem of row sent to child already 0, so it will not respond
+                if (A(k, i) == 0 || dest == 0) {
+                    // cout << "ZERO" << endl;
                     continue;
                 }
                 
                 // receive modified row
-                float cur_buf[n];
+                // float cur_buf[n];
                 // cout << "root waiting on " << dest << endl;
-                MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
+                MPI_Irecv(child_data[k], n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &reqs[k]);
                 // cout << "root received " << dest << endl;
 
                 // update L with multiplier stored at row[i].
                 // Then set to 0 in row and add row to U (A becomes U)
-                update_row(i, k, n, cur_buf, L, A);
+                // update_row(i, k, n, cur_buf, L, A);
                 
                 // L.print();
                 // A.print();
             }
+
+            for (int j = 0; j < child_ind; j++) {
+                int k = child_rows[child_ind];
+                int dest = (k - 1) % num_procs;
+                MPI_Wait(&reqs[k], &stat);  // ensure received
+                update_row(i, k, n, cur_buf, L, A);
 
             // root calculations (maybe move above receives)
             for (int j = 0; j < root_ind; j++) {
@@ -124,6 +127,9 @@ int main(int argc, char** argv) {
                 // cout << "k: " << k << endl;
                 float cur_buf[n];
                 A.get_row(k, cur_buf);
+                if (cur_buf[i] == 0) {
+                    continue;
+                }
                 calc_row(i, n, base_buf, cur_buf);
                 update_row(i, k, n, cur_buf, L, A);
 
