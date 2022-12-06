@@ -29,9 +29,9 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n
         cout << "n = " << n << endl;
         Matrix A(n);
-        A.fill_rand(-1);
+        A.fill_rand(1);
         A.print();
-        // float serial_result = A.determinant();
+        float serial_result = A.determinant();
         start = MPI_Wtime();
 
         // algo
@@ -113,14 +113,14 @@ int main(int argc, char** argv) {
             L(i, i) = 1;
         }
 
-        // L.print();
-        // A.print();
-        // float det_L = L.determinant();
-        // float det_U = A.determinant();
-        // cout << "Serial Result: " << serial_result << endl;
-        // cout << "Parallel Result: " << det_L * det_U << endl;
-        // cout << "Determinant of L: " << det_L << endl;
-        // cout << "Determinant of U: " << det_U << endl;
+        L.print();
+        A.print();
+        float det_L = L.determinant();
+        float det_U = A.determinant();
+        cout << "Serial Result: " << serial_result << endl;
+        cout << "Parallel Result: " << det_L * det_U << endl;
+        cout << "Determinant of L: " << det_L << endl;
+        cout << "Determinant of U: " << det_U << endl;
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
