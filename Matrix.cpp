@@ -169,7 +169,7 @@ void Matrix::get_row(int r, float* buf) {
 }
 
 float Matrix::determinant() {
-    int result = detrm_helper(*this);
+    float result = detrm_helper(*this);
     return result;
 }
 
