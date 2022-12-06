@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
                 // receive response from child with subtracted row and multiplier at i.
                 // if ith elem was already 0, child is set to not respond
                 if (U(k, i) != 0) {
-                    MPI_Irecv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &reqs[k]);
+                    MPI_Recv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &stat);
                 }
             }
 
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[j];
                 if (U(k, i) != 0) {
-                    MPI_Wait(&reqs[k], &stat);   // ensure data received
+                    // MPI_Wait(&reqs[k], &stat);   // ensure data received
                     update_row(i, k, n, child_data[k], U);
                 }
             }
@@ -162,6 +162,7 @@ int main(int argc, char** argv) {
                 // calc multiplier and store at ind i ->  Rk[i] = Rk[i] / Rb[i], 
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
                 // if row already zeroed out, ignore
+
                 // MPI_Wait(&reqs[k], &stat);  // ensure received
                 if (my_data[k][i] == 0) {
                     continue;
@@ -171,7 +172,7 @@ int main(int argc, char** argv) {
                 // send back to root
                 MPI_Request req;
                 MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-                // MPI_Wait(&req, &stat);
+                MPI_Wait(&req, &stat);
             }
             MPI_Barrier(MPI_COMM_WORLD);
         }
