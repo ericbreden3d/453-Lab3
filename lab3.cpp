@@ -136,29 +136,27 @@ int main(int argc, char** argv) {
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
-                if (recv_proc != this_rank) {
+                if (recv_proc == this_rank) {
+                    my_rows[my_ind++] = k;
+                } else {
                     continue;
                 }
 
                 // async receicve cur row k from root
                 // float cur_buf[n];
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
-
-                // received row already already zeroed out, ignore
-                if (my_data[k][i] == 0) {
-                    continue;
-                } else {
-                    my_rows[my_ind++] = k;
-                }
             }
 
             for (int j = 0; j < my_ind; j++) {
                 int k = my_rows[j];
 
-
                 // calc multiplier and store at ind i ->  Rk[i] = Rk[i] / Rb[i], 
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
+                // if row already zeroed out, ignore
                 MPI_Wait(&reqs[k], &stat);  // ensure received
+                if (my_data[k][i] == 0) {
+                    continue;
+                }
                 calc_row(i, n, base_buf, my_data[k]);
                 
                 // send back to root
