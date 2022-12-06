@@ -32,9 +32,9 @@ float Matrix::detrm_helper(Matrix& m) {
         // get sub-matrix without column i
         Matrix sub = m.get_detrm_subm(i);
         // recursively find determinant of sub-matrix
-        int rec = detrm_helper(sub);
+        float rec = detrm_helper(sub);
         // get product
-        int result = m(i, 0) * rec;
+        float result = m(i, 0) * rec;
         // add to or subtract from current total
         if (op) {
             detrm += result;
