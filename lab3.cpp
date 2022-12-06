@@ -62,7 +62,8 @@ int main(int argc, char** argv) {
 
                 // if root's responsibility, store k
                 if (dest == 0) {
-                    root_rows[root_ind++] = k; 
+                    root_rows[root_ind++] = k;
+                    continue;
                 }
 
                 float cur_buf[n];
