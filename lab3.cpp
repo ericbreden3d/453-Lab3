@@ -44,14 +44,15 @@ int main(int argc, char** argv) {
         start = MPI_Wtime();
 
         // algo
-        Matrix L(n);
-        int root_rows[n - 1] = {};
+        // Matrix L(n);
         for (int i = 0; i < n - 1; i++) {
             // get base row i for this iter
             float base_buf[n];
             A.get_row(i, base_buf);
 
             // distribute
+            int root_rows[n - 1] = {};
+            int base_sent[num_procs] = {};
             int root_ind = 0;
             for (int k = i + 1; k < n; k++) {
                 if (A(i, k) == 0) {
@@ -71,8 +72,9 @@ int main(int argc, char** argv) {
 
                 // send row i if haven't sent already then current row k
                 MPI_Request req1, req2;
-                if (k - i < num_procs) {
+                if (!base_sent[dest]) {
                     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
+                    base_sent[dest] = 1;
                 }
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
                 
@@ -138,6 +140,7 @@ int main(int argc, char** argv) {
         // child logic
         for (int i = 0; i < n - 1; i++) {
             float base_buf[n];
+            int base_recvd = 0;
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
@@ -146,9 +149,10 @@ int main(int argc, char** argv) {
                 }
                             
                 // receive base row for iteration i if haven't already
-                if (k - i < num_procs) {
+                if (!base_recvd) {
                     // cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                    base_recvd = 1;
                 }
 
                 // receicve cur row k
