@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         Matrix A(n);
         A.fill_rand(-1);
         A.print();
-        // float serial_result = A.determinant();
+        float serial_result = A.determinant();
         start = MPI_Wtime();
 
         // algo
