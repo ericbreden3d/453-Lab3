@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
                 U.get_row(k, cur_buf);
                 MPI_Request req;
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req);
-                MPI_Wait(&req, &stat);
+                // MPI_Wait(&req, &stat);
             }
 
             // async recv using child_rows gathered in last block
