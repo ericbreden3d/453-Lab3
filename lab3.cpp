@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
                 int dest = (k - 1) % num_procs;
 
                 // if root's responsibility, store k
-                if (dest == 0) {
+                if (dest == 0 && !A(i, k) == 0) {
                     root_rows[root_ind++] = k;
                     continue;
                 }
