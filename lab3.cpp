@@ -49,6 +49,9 @@ int main(int argc, char** argv) {
             // get base row i for this iter
             float base_buf[n];
             A.get_row(i, base_buf);
+            if (base_buf[i] == 0) {
+                cout << "BAD ZERO" << endl;
+            }
 
             // distribute
             int root_rows[n - 1] = {};
