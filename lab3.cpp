@@ -131,10 +131,6 @@ int main(int argc, char** argv) {
 
         // child logic
         for (int i = 0; i < n - 1; i++) {
-
-            // debug
-            cout << "ITER: " << i << endl;
-
             // receive broadcast base row for this iter i
             float base_buf[n];
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
@@ -153,13 +149,15 @@ int main(int argc, char** argv) {
                 }
 
                 // async receicve cur row k from root
-                float cur_buf[n];
-                MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                // float cur_buf[n];
+                MPI_Request rreq;
+                MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &rreq);
+                MPI_Wait(&rreq, &stat);
 
                 if (cur_buf[i] == 0) {
                     continue;
                 }
-                
+
                 calc_row(i, n, base_buf, cur_buf);
                 
                 // send back to root
