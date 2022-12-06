@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         cout << "n = " << n << endl;
         Matrix A(n);
         A.fill_rand(-1);
-        A.print();
+        // A.print();
         Matrix U = A;
         start = MPI_Wtime();
 
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
 
         // L.print();
         // A.print();
-        
+
         // float serial_result = A.determinant();
         // float det_U = A.determinant();
         // cout << "Serial Result: " << serial_result << endl;
