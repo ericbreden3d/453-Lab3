@@ -66,7 +66,11 @@ int main(int argc, char** argv) {
                 int dest = (k - 1) % num_procs;
 
                 // if root's responsibility, store k
-                if (dest == 0 && !A(k, i) == 0) {
+                if (dest == 0) {
+                    if (A(k, i) == 0) {
+                        cout << "root zero condition" << endl;
+                        continue;
+                    }
                     cout << "root responsible for " << k << endl;
                     root_rows[root_ind++] = k;
                     continue;
