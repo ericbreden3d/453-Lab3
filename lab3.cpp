@@ -67,6 +67,7 @@ int main(int argc, char** argv) {
 
                 // if root's responsibility, store k
                 if (dest == 0 && !A(k, i) == 0) {
+                    cout << "root responsible for " << k << endl;
                     root_rows[root_ind++] = k;
                     continue;
                 }
