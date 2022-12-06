@@ -96,6 +96,7 @@ int main(int argc, char** argv) {
                 
                 // receive modified row
                 float cur_buf[n];
+                cout << "root waiting" << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
 
                 // update L with multiplier stored at row[i].
@@ -147,12 +148,14 @@ int main(int argc, char** argv) {
                             
                 // receive base row for iteration i if haven't already
                 if (recv_proc < num_procs) {
+                    cout << "child waiting for base" << endl;
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                 }
 
                 // receicve cur row k
                 if (recv_proc == this_rank) {
                     float cur_buf[n];
+                    cout << "child waiting" << endl;
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
 
                     // calculate multiplier, subtract row, and send back
