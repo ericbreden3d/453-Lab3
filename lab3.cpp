@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
                 
                 // ensure buffers copied before they go out of scope
-                MPI_Wait(&req1, &stat);
+                // MPI_Wait(&req1, &stat);
                 MPI_Wait(&req2, &stat);
             }
 
