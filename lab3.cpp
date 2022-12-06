@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
                 // receive response from child with subtracted row and multiplier at i.
                 // if ith elem was already 0, child is set to not respond
                 if (U(k, i) != 0) {
-                    float test_buf[n] = {};
+                    float test_buf[n];
                     MPI_Recv(test_buf, n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &stat);
                 }
             }
