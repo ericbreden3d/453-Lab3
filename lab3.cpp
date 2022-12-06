@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
                             
                 // receive base row for iteration i if haven't already
                 if (recv_proc <= num_procs) {
-                    cout << "child waiting " << this_rank << " on base " << i << endl;
+                    cout << "child waiting " << this_rank << " on base " << i << " for k: " << k << endl;
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                 }
 
