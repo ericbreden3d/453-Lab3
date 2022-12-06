@@ -93,8 +93,8 @@ int main(int argc, char** argv) {
             // update U with child data
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[child_ind];
-                if (U(k, i) != 0) {
-                    MPI_Wait(&reqs[k], &stat);   // ensure data received
+                MPI_Wait(&reqs[k], &stat);   // ensure data received
+                if (child_data[k] != 0) {
                     update_row(i, k, n, child_data[k], U);
                 }
             }
@@ -129,8 +129,8 @@ int main(int argc, char** argv) {
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
 
-            int my_rows[n - 1];
-            float my_data[n - 1][n];
+            int my_rows[n - 1] = {};
+            float my_data[n - 1][n] = {};
             int my_ind = 0;
             MPI_Request reqs[n - 1];
             for (int k = i + 1; k < n; k++) {
@@ -154,10 +154,9 @@ int main(int argc, char** argv) {
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
                 // if row already zeroed out, ignore
                 MPI_Wait(&reqs[k], &stat);  // ensure received
-                if (my_data[k][i] == 0) {
-                    continue;
+                if (my_data[k][i] != 0) {
+                    calc_row(i, n, base_buf, my_data[k]);
                 }
-                calc_row(i, n, base_buf, my_data[k]);
                 
                 // send back to root
                 MPI_Request req;
