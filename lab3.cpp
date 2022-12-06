@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[child_ind];
                 if (A(k, i) != 0) {
-                    MPI_Wait(&reqs[k], &stat);
+                    // MPI_Wait(&reqs[k], &stat);
                     update_row(i, k, n, child_data[k], L, A);
                 }
             }
