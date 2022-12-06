@@ -68,10 +68,10 @@ int main(int argc, char** argv) {
                 // if root's responsibility, store k
                 if (dest == 0) {
                     if (A(k, i) == 0) {
-                        cout << "root zero condition" << endl;
+                        // cout << "root zero condition" << endl;
                         continue;
                     }
-                    cout << "root responsible for " << k << endl;
+                    // cout << "root responsible for " << k << endl;
                     root_rows[root_ind++] = k;
                     continue;
                 }
@@ -90,6 +90,19 @@ int main(int argc, char** argv) {
                 // ensure buffers copied before they go out of scope
                 MPI_Wait(&req1, &stat);
                 MPI_Wait(&req2, &stat);
+            }
+
+            // root calculations (maybe move above receives)
+            for (int j = 0; j < root_ind; j++) {
+                int k = root_rows[j];
+                // cout << "k: " << k << endl;
+                float cur_buf[n];
+                A.get_row(k, cur_buf);
+                calc_row(i, n, base_buf, cur_buf);
+                update_row(i, k, n, cur_buf, L, A);
+
+                // L.print();
+                // A.print();
             }
 
             // loop -> recv and update
@@ -117,19 +130,6 @@ int main(int argc, char** argv) {
                 // Then set to 0 in row and add row to U (A becomes U)
                 update_row(i, k, n, cur_buf, L, A);
                 
-                // L.print();
-                // A.print();
-            }
-
-            // root calculations (maybe move above receives)
-            for (int j = 0; j < root_ind; j++) {
-                int k = root_rows[j];
-                // cout << "k: " << k << endl;
-                float cur_buf[n];
-                A.get_row(k, cur_buf);
-                calc_row(i, n, base_buf, cur_buf);
-                update_row(i, k, n, cur_buf, L, A);
-
                 // L.print();
                 // A.print();
             }
