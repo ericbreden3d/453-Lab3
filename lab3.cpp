@@ -88,6 +88,9 @@ int main(int argc, char** argv) {
                 A.get_row(k, cur_buf);
                 calc_row(i, n, base_buf, cur_buf);
                 update_row(i, k, n, cur_buf, L, A);
+
+                L.print();
+                A.print();
             }
 
             // loop -> recv and update
@@ -97,6 +100,11 @@ int main(int argc, char** argv) {
                 }
 
                 int dest = k % num_procs - 1;
+
+                // if root calculated this root, ignore
+                if (dest == 0) {
+                    continue;
+                }
                 
                 // receive modified row
                 float cur_buf[n];
@@ -122,8 +130,8 @@ int main(int argc, char** argv) {
         float det_U = A.determinant();
         cout << "Serial Result: " << serial_result << endl;
         cout << "Parallel Result: " << det_L * det_U << endl;
-        cout << "Determinant of L: " << det_L << endl;
-        cout << "Determinant of U: " << det_U << endl;
+        // cout << "Determinant of L: " << det_L << endl;
+        // cout << "Determinant of U: " << det_U << endl;
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
