@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
                 // first elem of row sent to child already 0, so it will not respond
-                if (A(i, k) == 0) {
+                if (A(k, i) == 0) {
                     cout << "ZERO" << endl;
                     continue;
                 }
