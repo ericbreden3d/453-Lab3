@@ -38,9 +38,9 @@ int main(int argc, char** argv) {
     if (this_rank == 0) {
         // create initial randomized matrix of size n * n
         cout << "n = " << n << endl;
-        Matrix U(n);
+        Matrix A(n);
         A.fill_rand(-1);
-        Matrix A = U;  // original A is modified into U
+        Matrix U = A;  // original A is modified into U
         // Matrix L(n);   // matrix L not needed for finding determinant
 
         // start timer
