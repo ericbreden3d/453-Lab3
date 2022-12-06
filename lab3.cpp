@@ -83,6 +83,18 @@ int main(int argc, char** argv) {
                 MPI_Wait(&req2, &stat);
             }
 
+            // root calculations
+            for (int j = 0; j < root_ind; j++) {
+                int k = root_rows[j];
+                float cur_buf[n];
+                A.get_row(k, cur_buf);
+                calc_row(i, n, base_buf, cur_buf);
+                update_row(i, k, n, cur_buf, L, A);
+
+                // L.print();
+                // A.print();
+            }
+
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
                 if (A(i, k) == 0) {
@@ -105,18 +117,6 @@ int main(int argc, char** argv) {
                 // Then set to 0 in row and add row to U (A becomes U)
                 update_row(i, k, n, cur_buf, L, A);
                 
-                // L.print();
-                // A.print();
-            }
-
-            // root calculations
-            for (int j = 0; j < root_ind; j++) {
-                // int k = root_rows[j];
-                // float cur_buf[n];
-                // A.get_row(k, cur_buf);
-                // calc_row(i, n, base_buf, cur_buf);
-                // update_row(i, k, n, cur_buf, L, A);
-
                 // L.print();
                 // A.print();
             }
