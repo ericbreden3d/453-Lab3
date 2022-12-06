@@ -103,8 +103,8 @@ int main(int argc, char** argv) {
                 //     cout << endl;
                 // }
 
-                // L.print();
-                // A.print();
+                L.print();
+                A.print();
 
                 
             }
