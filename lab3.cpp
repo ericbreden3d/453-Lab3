@@ -104,9 +104,9 @@ int main(int argc, char** argv) {
                 
                 // receive modified row
                 float cur_buf[n];
-                cout << "root waiting on " << dest << endl;
+                // cout << "root waiting on " << dest << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
-                cout << "root received " << dest << endl;
+                // cout << "root received " << dest << endl;
 
                 // update L with multiplier stored at row[i].
                 // Then set to 0 in row and add row to U (A becomes U)
@@ -166,9 +166,9 @@ int main(int argc, char** argv) {
 
                 // receicve cur row k
                 float cur_buf[n];
-                cout << "child " << this_rank << " waiting " << i << ", " << k << endl;
+                // cout << "child " << this_rank << " waiting " << i << ", " << k << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                cout << "child " << this_rank << " received " << i << ", " << k << endl;
+                // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
                 // received already zeroed row, ignore
                 if (cur_buf[i] == 0) {
