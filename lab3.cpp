@@ -137,10 +137,10 @@ int main(int argc, char** argv) {
         // L.print();
         // A.print();
 
-        float serial_result = U.determinant();
-        float parallel_result = A.determinant();
-        cout << "Serial Result: " << serial_result << endl;
-        cout << "Parallel Result: " << parallel_result << endl;
+        // float serial_result = U.determinant();
+        // float parallel_result = A.determinant();
+        // cout << "Serial Result: " << serial_result << endl;
+        // cout << "Parallel Result: " << parallel_result << endl;
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
