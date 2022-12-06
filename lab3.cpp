@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
             // root calculations (maybe move above receives)
             for (int j = 0; j < root_ind; j++) {
                 int k = root_rows[j];
-                cout << "k: " < k << endl;
+                cout << "k: " << k << endl;
                 float cur_buf[n];
                 A.get_row(k, cur_buf);
                 calc_row(i, n, base_buf, cur_buf);
