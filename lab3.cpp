@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[j];
                 if (U(k, i) != 0) {
-                    MPI_Wait(&reqs[k], &stat);   // ensure data received
+                    // MPI_Wait(&reqs[k], &stat);   // ensure data received
                     update_row(i, k, n, child_data[k], U);
                 }
             }
