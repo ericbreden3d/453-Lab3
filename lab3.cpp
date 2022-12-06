@@ -153,7 +153,7 @@ int main(int argc, char** argv) {
                 }
 
                 // async receicve cur row k from root
-                MPI_Recv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
             }
 
             for (int j = 0; j < my_ind; j++) {
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
                 // if row already zeroed out, ignore
 
-                // MPI_Wait(&reqs[k], &stat);  // ensure received
+                MPI_Wait(&reqs[k], &stat);  // ensure received
                 if (my_data[k][i] == 0) {
                     continue;
                 }
