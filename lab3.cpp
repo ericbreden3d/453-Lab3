@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n
         cout << "n = " << n << endl;
         Matrix A(n);
-        A.fill_rand(-1);
+        A.fill_rand(2);
         // A.print();
         Matrix U = A;
         start = MPI_Wtime();
@@ -51,11 +51,12 @@ int main(int argc, char** argv) {
             A.get_row(i, base_buf);
 
             // distribute
-            int root_rows[n - 1] = {0};
-            int base_sent[num_procs] = {0};
+            int root_rows[n - 1] = {};
+            int base_sent[num_procs] = {};
             int root_ind = 0;
             for (int k = i + 1; k < n; k++) {
                 if (A(i, k) == 0) {
+                    cout << "ZERO" << endl;
                     continue;
                 } 
 
@@ -86,6 +87,7 @@ int main(int argc, char** argv) {
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
                 if (A(i, k) == 0) {
+                    cout << "ZERO" << endl;
                     continue;
                 }
 
