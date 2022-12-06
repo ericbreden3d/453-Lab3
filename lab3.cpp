@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
                 // if row already zeroed out, ignore
                 MPI_Wait(&reqs[k], &stat);  // ensure received
-                if (my_data[k][i] != 0) {
+                if (my_data[k][i] == 0) {
                     continue;
                 }
                 calc_row(i, n, base_buf, my_data[k]);
