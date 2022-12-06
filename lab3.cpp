@@ -6,7 +6,7 @@
 using namespace std;
 
 // get # of processors in each dim - dims_arr is out param
-void calc_row(int i, float* base_row, float* cur_row) {
+void calc_row(int i, int n, float* base_row, float* cur_row) {
     cur_row[i] = cur_row[i] / base_row[i];
     for (int j = i + 1; j < n; j++) {
         cur_row[j] = cur_row[j] - base_row[j] * cur_row[i];
@@ -14,7 +14,7 @@ void calc_row(int i, float* base_row, float* cur_row) {
 }
 
 // update L and A (which becomes U) with received row
-void update_row(int i, int k, int* row, Matrix& L, Matrix& A) {
+void update_row(int i, int k, int n, float* row, Matrix& L, Matrix& A) {
     L(k, i) = row[i];
     row[i] = 0;
     for (int j = 0; j < n; j++) {
@@ -82,11 +82,11 @@ int main(int argc, char** argv) {
 
             // root calculations
             for (int j = 0; j < root_ind; j++) {
-                k = root_rows[j];
+                int k = root_rows[j];
                 float cur_buf[n];
                 A.get_row(k, cur_buf);
-                calc_row(i, base_buf, cur_buf);
-                update_row(i, k, cur_buf, L, A);
+                calc_row(i, n, base_buf, cur_buf);
+                update_row(i, k, n, cur_buf, L, A);
             }
 
             // loop -> recv and update
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
                 // update L with multiplier stored at row[i].
                 // Then set to 0 in row and add row to U (A becomes U)
-                update_row(i, k, cur_buf, L, A);
+                update_row(i, k, n, cur_buf, L, A);
                 
                 L.print();
                 A.print();
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
 
                     // calculate multiplier, subtract row, and send back
-                    calc_row(i, base_buf, cur_buf);
+                    calc_row(i, n, base_buf, cur_buf);
                     
                     MPI_Request req;
                     MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
