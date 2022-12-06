@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
                     cout << "storing k\n";
                     root_rows[root_ind++] = k;
                     continue;
+                } else {
+                    cout << "dest: " << dest << ", k: " << k << ", np: " << num_procs << endl;
                 }
 
                 float cur_buf[n];
