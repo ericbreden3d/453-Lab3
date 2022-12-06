@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
                 
                 // receive modified row
                 float cur_buf[n];
-                // cout << "root waiting on " << k << endl;
+                cout << "root waiting on " << dest << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
 
                 // update L with multiplier stored at row[i].
