@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n
         cout << "n = " << n << endl;
         Matrix A(n);
-        A.fill_rand(2);
+        A.fill_rand(-1);
         // A.print();
         Matrix U = A;
         start = MPI_Wtime();
