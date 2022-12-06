@@ -128,6 +128,11 @@ int main(int argc, char** argv) {
             float base_buf[n];
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
+
+            int my_rows[n - 1];
+            float my_data[n - 1][n];
+            int my_ind = 0;
+            MPI_Request reqs[n - 1];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
@@ -135,22 +140,30 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                // receicve cur row k from root
-                float cur_buf[n];
-                MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                // async receicve cur row k from root
+                // float cur_buf[n];
+                MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
 
                 // received row already already zeroed out, ignore
                 if (cur_buf[i] == 0) {
                     continue;
+                } else {
+                    my_rows[my_ind++] = k;
                 }
+            }
+
+            for (int j = 0; j < my_ind; j++) {
+                int k = my_rows[j];
+
 
                 // calc multiplier and store at ind i ->  Rk[i] = Rk[i] / Rb[i], 
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
-                calc_row(i, n, base_buf, cur_buf);
+                MPI_Wait(&reqs[k], &stat);  // ensure received
+                calc_row(i, n, base_buf, my_data[k]);
                 
                 // send back to root
                 MPI_Request req;
-                MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+                MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
             }
         }
