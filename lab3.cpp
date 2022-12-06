@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
                 
                 MPI_Request req;
                 MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-                MPI_Wait(&req, &stat);
+                // MPI_Wait(&req, &stat);
             }
         }
     }
