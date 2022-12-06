@@ -15,10 +15,10 @@ void calc_row(int i, float* base_row, float* cur_row) {
 
 // update L and A (which becomes U) with received row
 void update_row(int i, int k, int* row, Matrix& L, Matrix& A) {
-    L(k, i) = cur_buf[i];
-    cur_buf[i] = 0;
+    L(k, i) = row[i];
+    row[i] = 0;
     for (int j = 0; j < n; j++) {
-        A(k, j) = cur_buf[j];
+        A(k, j) = row[j];
     }
 }
 
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
                 }
                             
                 // receive base row for iteration i if haven't already
-                if (dest < num_procs) {
+                if (recv_proc < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                 }
 
