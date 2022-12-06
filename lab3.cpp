@@ -125,6 +125,10 @@ int main(int argc, char** argv) {
     } else {
         // child logic
         for (int i = 0; i < n - 1; i++) {
+
+            // debug
+            cout << "ITER: " << i << endl;
+
             // receive broadcast base row for this iter i
             float base_buf[n];
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
