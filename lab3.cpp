@@ -89,6 +89,7 @@ int main(int argc, char** argv) {
                 calc_row(i, n, base_buf, cur_buf);
                 update_row(i, k, n, cur_buf, L, A);
 
+                cout << "Root update" << endl;
                 L.print();
                 A.print();
             }
