@@ -92,19 +92,6 @@ int main(int argc, char** argv) {
                 MPI_Wait(&req2, &stat);
             }
 
-            // root calculations (maybe move above receives)
-            for (int j = 0; j < root_ind; j++) {
-                int k = root_rows[j];
-                // cout << "k: " << k << endl;
-                float cur_buf[n];
-                A.get_row(k, cur_buf);
-                calc_row(i, n, base_buf, cur_buf);
-                update_row(i, k, n, cur_buf, L, A);
-
-                // L.print();
-                // A.print();
-            }
-
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
                 // first elem of row sent to child already 0, so it will not respond
@@ -130,6 +117,19 @@ int main(int argc, char** argv) {
                 // Then set to 0 in row and add row to U (A becomes U)
                 update_row(i, k, n, cur_buf, L, A);
                 
+                // L.print();
+                // A.print();
+            }
+
+            // root calculations (maybe move above receives)
+            for (int j = 0; j < root_ind; j++) {
+                int k = root_rows[j];
+                // cout << "k: " << k << endl;
+                float cur_buf[n];
+                A.get_row(k, cur_buf);
+                calc_row(i, n, base_buf, cur_buf);
+                update_row(i, k, n, cur_buf, L, A);
+
                 // L.print();
                 // A.print();
             }
