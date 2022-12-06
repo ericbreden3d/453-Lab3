@@ -121,6 +121,7 @@ int main(int argc, char** argv) {
         // cout << "Parallel Result: " << det_L * det_U << endl;
         // cout << "Determinant of L: " << det_L << endl;
         // cout << "Determinant of U: " << det_U << endl;
+        cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
         // child logic
