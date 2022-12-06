@@ -62,11 +62,8 @@ int main(int argc, char** argv) {
 
                 // if root's responsibility, store k
                 if (dest == 0) {
-                    cout << "storing k\n";
                     root_rows[root_ind++] = k;
                     continue;
-                } else {
-                    cout << "dest: " << dest << ", k: " << k << ", np: " << num_procs << endl;
                 }
 
                 float cur_buf[n];
@@ -92,9 +89,8 @@ int main(int argc, char** argv) {
                 calc_row(i, n, base_buf, cur_buf);
                 update_row(i, k, n, cur_buf, L, A);
 
-                cout << "Root update" << endl;
-                L.print();
-                A.print();
+                // L.print();
+                // A.print();
             }
 
             // loop -> recv and update
@@ -118,9 +114,8 @@ int main(int argc, char** argv) {
                 // Then set to 0 in row and add row to U (A becomes U)
                 update_row(i, k, n, cur_buf, L, A);
                 
-                cout << "Child update\n";
-                L.print();
-                A.print();
+                // L.print();
+                // A.print();
             }
         }
 
@@ -129,8 +124,8 @@ int main(int argc, char** argv) {
             L(i, i) = 1;
         }
 
-        L.print();
-        A.print();
+        // L.print();
+        // A.print();
         float det_L = L.determinant();
         float det_U = A.determinant();
         cout << "Serial Result: " << serial_result << endl;
