@@ -110,8 +110,6 @@ int main(int argc, char** argv) {
                 calc_row(i, n, base_buf, cur_buf);
                 update_row(i, k, n, cur_buf, U);
             }
-            
-            MPI_Barrier(MPI_COMM_WORLD);
         }
 
         //
@@ -155,7 +153,7 @@ int main(int argc, char** argv) {
                 // calc multiplier and store at ind i ->  Rk[i] = Rk[i] / Rb[i], 
                 // subtract multiplied base from row k -> Rk - Rb*multiplier
                 // if row already zeroed out, ignore
-                MPI_Wait(&reqs[k], &stat);  // ensure received
+                // MPI_Wait(&reqs[k], &stat);  // ensure received
                 if (my_data[k][i] != 0) {
                     calc_row(i, n, base_buf, my_data[k]);
                 }
@@ -165,7 +163,6 @@ int main(int argc, char** argv) {
                 MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
             }
-            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
