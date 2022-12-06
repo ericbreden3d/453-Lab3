@@ -151,8 +151,9 @@ int main(int argc, char** argv) {
                             
                 // receive base row for iteration i if haven't already
                 if (!base_recvd) {
-                    // cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
+                    cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                    cout << "child " << this_rank << " received " << k << endl;
                     base_recvd = 1;
                 }
 
