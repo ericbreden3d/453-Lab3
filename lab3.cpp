@@ -115,8 +115,8 @@ int main(int argc, char** argv) {
             L(i, i) = 1;
         }
 
-        // L.print();
-        // A.print();
+        L.print();
+        A.print();
         int det_L = L.determinant();
         int det_U = A.determinant();
         cout << "Serial Result: " << serial_result << endl;
@@ -152,7 +152,7 @@ int main(int argc, char** argv) {
                     float cur_buf[n];
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
 
-                    // calc and send back
+                    // calculate multiplier, subtract row, and send back
                     cur_buf[i] = cur_buf[i] / base_buf[i];
                     for (int j = i + 1; j < n; j++) {
                         cur_buf[j] = cur_buf[j] - base_buf[j] * cur_buf[i];
