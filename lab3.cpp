@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
             for (int k = i + 1; k < n; k++) {
                 // first elem of row sent to child already 0, so it will not respond
                 if (A(k, i) == 0) {
-                    cout << "ZERO" << endl;
+                    // cout << "ZERO" << endl;
                     continue;
                 }
 
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
                 
                 // receive modified row
                 float cur_buf[n];
-                cout << "root waiting on " << dest << endl;
+                // cout << "root waiting on " << dest << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
 
                 // update L with multiplier stored at row[i].
@@ -171,7 +171,7 @@ int main(int argc, char** argv) {
 
                 // received already zeroed row, ignore
                 if (cur_buf[i] == 0) {
-                    cout << "child " << this_rank << ": already zeroed at " << i << ", " << k << endl;
+                    // cout << "child " << this_rank << ": already zeroed at " << i << ", " << k << endl;
                     continue;
                 }
 
