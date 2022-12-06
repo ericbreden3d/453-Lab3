@@ -53,16 +53,13 @@ int main(int argc, char** argv) {
                 cout << "BAD ZERO" << endl;
             }
 
+            MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
+
             // distribute
             int root_rows[n - 1] = {};
             int base_sent[num_procs] = {};
             int root_ind = 0;
             for (int k = i + 1; k < n; k++) {
-                // if (A(i, k) == 0) {
-                //     cout << "ZERO" << endl;
-                //     continue;
-                // } 
-
                 int dest = (k - 1) % num_procs;
 
                 // if root's responsibility, store k
@@ -81,10 +78,10 @@ int main(int argc, char** argv) {
 
                 // send row i if haven't sent already then current row k
                 MPI_Request req1, req2;
-                if (!base_sent[dest]) {
-                    MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
-                    base_sent[dest] = 1;
-                }
+                // if (!base_sent[dest]) {
+                //     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
+                //     base_sent[dest] = 1;
+                // }
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
                 
                 // ensure buffers copied before they go out of scope
@@ -154,6 +151,9 @@ int main(int argc, char** argv) {
         for (int i = 0; i < n - 1; i++) {
             float base_buf[n];
             int base_recvd = 0;
+
+            MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
+
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
@@ -162,12 +162,12 @@ int main(int argc, char** argv) {
                 }
                             
                 // receive base row for iteration i if haven't already
-                if (!base_recvd) {
-                    // cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
-                    MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    // cout << "child " << this_rank << " received " << k << endl;
-                    base_recvd = 1;
-                }
+                // if (!base_recvd) {
+                //     // cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
+                //     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                //     // cout << "child " << this_rank << " received " << k << endl;
+                //     base_recvd = 1;
+                // }
 
                 // receicve cur row k
                 float cur_buf[n];
