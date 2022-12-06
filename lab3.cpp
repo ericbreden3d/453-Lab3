@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
                 
                 // ensure buffers copied before they go out of scope
                 // MPI_Wait(&req1, &stat);
-                // MPI_Wait(&req, &stat);
+                MPI_Wait(&req, &stat);
             }
 
             // loop -> recv and update
