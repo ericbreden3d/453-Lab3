@@ -6,11 +6,20 @@
 using namespace std;
 
 // get # of processors in each dim - dims_arr is out param
-void get_dim_counts(int m, MPI_Comm comm, int* dims_arr) {
-    int dim_num;
-    int periods[m];
-    int coords[m];
-    MPI_Cart_get(comm, m, dims_arr, periods, coords);
+void calc_row(int i, float* base_row, float* cur_row) {
+    cur_row[i] = cur_row[i] / base_row[i];
+    for (int j = i + 1; j < n; j++) {
+        cur_row[j] = cur_row[j] - base_row[j] * cur_row[i];
+    }
+}
+
+// update L and A (which becomes U) with received row
+void update_row(int i, int k, int* row, Matrix& L, Matrix& A) {
+    L(k, i) = cur_buf[i];
+    cur_buf[i] = 0;
+    for (int j = 0; j < n; j++) {
+        A(k, j) = cur_buf[j];
+    }
 }
 
 int main(int argc, char** argv) {    
@@ -36,36 +45,32 @@ int main(int argc, char** argv) {
 
         // algo
         Matrix L(n);
+        int root_rows[n - 1] = {};
         for (int i = 0; i < n - 1; i++) {
             // get base row i for this iter
             float base_buf[n];
             A.get_row(i, base_buf);
 
-            // cout << "-> ";
-            // for (int j = 0; j < n; j++) {
-            //     cout << base_buf[j] << " ";
-            // }
-            // cout << endl;
-
-            // send
+            // distribute
+            int root_ind = 0;
             for (int k = i + 1; k < n; k++) {
                 if (A(i, k) == 0) {
                     continue;
                 } 
 
-                int dest = (k - 1) % (num_procs - 1) + 1;
+                int dest = k % num_procs - 1;
+
+                // if root's responsibility, store k
+                if (dest == 0) {
+                    root_rows[root_ind++] = k; 
+                }
 
                 float cur_buf[n];
                 A.get_row(k, cur_buf);
 
-                // for (int j = 0; j < n; j++) {
-                //     cout << cur_buf[j] << " ";
-                // }
-                // cout << endl;
-
                 // send row i if haven't sent already then current row k
                 MPI_Request req1, req2;
-                if (k - 1 < num_procs) {
+                if (dest < num_procs) {
                     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
                 }
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
@@ -74,7 +79,15 @@ int main(int argc, char** argv) {
                 MPI_Wait(&req1, &stat);
                 MPI_Wait(&req2, &stat);
             }
-            // cout << endl;
+
+            // root calculations
+            for (int j = 0; j < root_ind; j++) {
+                k = root_rows[j];
+                float cur_buf[n];
+                A.get_row(k, cur_buf);
+                calc_row(i, base_buf, cur_buf);
+                update_row(i, k, cur_buf, L, A);
+            }
 
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
@@ -82,7 +95,7 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                int dest = (k - 1) % (num_procs - 1) + 1;
+                int dest = k % num_procs - 1;
                 
                 // receive modified row
                 float cur_buf[n];
@@ -90,19 +103,8 @@ int main(int argc, char** argv) {
 
                 // update L with multiplier stored at row[i].
                 // Then set to 0 in row and add row to U (A becomes U)
-                L(k, i) = cur_buf[i];
-                cur_buf[i] = 0;
-                for (int j = 0; j < n; j++) {
-                    A(k, j) = cur_buf[j];
-                }
+                update_row(i, k, cur_buf, L, A);
                 
-                // if (dest == 2) {
-                //     for (int j = 0; j < n; j++) {
-                //         cout << cur_buf[j] << " ";
-                //     }
-                //     cout << endl;
-                // }
-
                 L.print();
                 A.print();
             }
@@ -129,21 +131,14 @@ int main(int argc, char** argv) {
             float base_buf[n];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
-                int recv_proc = (k - 1) % (num_procs - 1) + 1;
+                int recv_proc = k % num_procs - 1;
                 if (recv_proc != this_rank) {
                     continue;
                 }
                             
                 // receive base row for iteration i if haven't already
-                if (k - 1 < num_procs) {
+                if (dest < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    // if (this_rank == 2) {
-                    //     cout << "->";
-                    //     for (int j = 0; j < n; j++) {
-                    //         cout << base_buf[j] << " ";
-                    //     }
-                    //     cout << endl;
-                    // }
                 }
 
                 // receicve cur row k
@@ -152,22 +147,11 @@ int main(int argc, char** argv) {
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
 
                     // calculate multiplier, subtract row, and send back
-                    cur_buf[i] = cur_buf[i] / base_buf[i];
-                    for (int j = i + 1; j < n; j++) {
-                        cur_buf[j] = cur_buf[j] - base_buf[j] * cur_buf[i];
-                    }
+                    calc_row(i, base_buf, cur_buf);
                     
                     MPI_Request req;
                     MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                     MPI_Wait(&req, &stat);
-
-                    // debug
-                    // if (this_rank == 2) {
-                    //     for (int j = 0; j < n; j++) {
-                    //         cout << cur_buf[j] << " ";
-                    //     }
-                    //     cout << endl;
-                    // }
                 }
             }
         }
