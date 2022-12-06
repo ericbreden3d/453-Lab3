@@ -155,7 +155,8 @@ int main(int argc, char** argv) {
                 if (recv_proc == this_rank) {
                     float cur_buf[n];
                     MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    cout << stat.MPI_ERROR << endl;
+                    if (stat.MPI_ERROR != 0)
+                        cout << "ERROR" << endl;
                     // calculate multiplier, subtract row, and send back
                     calc_row(i, n, base_buf, cur_buf);
                     
