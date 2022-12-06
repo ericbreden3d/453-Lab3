@@ -166,7 +166,9 @@ int main(int argc, char** argv) {
 
                 // receicve cur row k
                 float cur_buf[n];
+                cout << "child " << this_rank << " waiting" << endl;
                 MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                cout << "child " << this_rank << " received" << endl;
 
                 // received already zeroed row, ignore
                 if (cur_buf[i] == 0) {
