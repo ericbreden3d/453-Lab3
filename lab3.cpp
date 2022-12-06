@@ -93,8 +93,8 @@ int main(int argc, char** argv) {
             // update U with child data
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[child_ind];
-                MPI_Wait(&reqs[k], &stat);   // ensure data received
-                if (child_data[k] != 0) {
+                if (U(k, i) != 0) {
+                    MPI_Wait(&reqs[k], &stat);   // ensure data received
                     update_row(i, k, n, child_data[k], U);
                 }
             }
@@ -155,8 +155,9 @@ int main(int argc, char** argv) {
                 // if row already zeroed out, ignore
                 // MPI_Wait(&reqs[k], &stat);  // ensure received
                 if (my_data[k][i] != 0) {
-                    calc_row(i, n, base_buf, my_data[k]);
+                    continue;
                 }
+                calc_row(i, n, base_buf, my_data[k]);
                 
                 // send back to root
                 MPI_Request req;
