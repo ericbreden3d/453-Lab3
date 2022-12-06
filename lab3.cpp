@@ -15,11 +15,11 @@ void calc_row(int i, int n, float* base_row, float* cur_row) {
 
 // update L and A (which becomes U) with received row.
 // Also set index i to 0 to get echelon form
-void update_row(int i, int k, int n, float* row, Matrix& A) {
+void update_row(int i, int k, int n, float* row, Matrix& U) {
     // L(k, i) = row[i];
     row[i] = 0;
     for (int j = 0; j < n; j++) {
-        A(k, j) = row[j];
+        U(k, j) = row[j];
     }
 }
 
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n * n
         cout << "n = " << n << endl;
         Matrix A(n);
-        Matrix U = A;  // original A is modified into U
         A.fill_rand(-1);
+        Matrix U = A;  // original A is modified into U
         // Matrix L(n);   // matrix L not needed for finding determinant
 
         // start timer
@@ -128,11 +128,10 @@ int main(int argc, char** argv) {
             float base_buf[n];
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
-
             int my_rows[n - 1] = {};
             float my_data[n - 1][n] = {};
             int my_ind = 0;
-            MPI_Request reqs[n - 1];
+            MPI_Request reqs[n - 1] = {};
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
@@ -143,7 +142,6 @@ int main(int argc, char** argv) {
                 }
 
                 // async receicve cur row k from root
-                // float cur_buf[n];
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
             }
 
