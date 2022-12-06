@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
 
                 // received row already already zeroed out, ignore
-                if (cur_buf[i] == 0) {
+                if (my_data[k][i] == 0) {
                     continue;
                 } else {
                     my_rows[my_ind++] = k;
