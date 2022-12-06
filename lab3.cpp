@@ -158,20 +158,18 @@ int main(int argc, char** argv) {
                 }
 
                 // receicve cur row k
-                if (recv_proc == this_rank) {
-                    float cur_buf[n];
-                    cout << this_rank << "-" << k << endl;
-                    MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                    cout << this_rank << "==" << k << endl;
-                    if (stat.MPI_ERROR != 0)
-                        cout << "ERROR" << endl;
-                    // calculate multiplier, subtract row, and send back
-                    calc_row(i, n, base_buf, cur_buf);
-                    
-                    MPI_Request req;
-                    MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-                    MPI_Wait(&req, &stat);
-                }
+                float cur_buf[n];
+                // cout << this_rank << "-" << k << endl;
+                MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                // cout << this_rank << "==" << k << endl;
+                if (stat.MPI_ERROR != 0)
+                    cout << "ERROR" << endl;
+                // calculate multiplier, subtract row, and send back
+                calc_row(i, n, base_buf, cur_buf);
+                
+                MPI_Request req;
+                MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+                MPI_Wait(&req, &stat);
             }
         }
     }
