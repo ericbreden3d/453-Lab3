@@ -105,23 +105,23 @@ int main(int argc, char** argv) {
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[child_ind];
                 if (A(k, i) != 0) {
-                    // MPI_Wait(&reqs[k], &stat);
+                    MPI_Wait(&reqs[k], &stat);
                     update_row(i, k, n, child_data[k], L, A);
                 }
             }
 
             // update (after calc) with root data
-            for (int j = 0; j < root_ind; j++) {
-                int k = root_rows[j];
-                float cur_buf[n];
-                A.get_row(k, cur_buf);
-                if (cur_buf[i] == 0) {
-                    continue;
-                }
-                calc_row(i, n, base_buf, cur_buf);
-                update_row(i, k, n, cur_buf, L, A);
-            }
-        }
+        //     for (int j = 0; j < root_ind; j++) {
+        //         int k = root_rows[j];
+        //         float cur_buf[n];
+        //         A.get_row(k, cur_buf);
+        //         if (cur_buf[i] == 0) {
+        //             continue;
+        //         }
+        //         calc_row(i, n, base_buf, cur_buf);
+        //         update_row(i, k, n, cur_buf, L, A);
+        //     }
+        // }
 
         // add 1s to diagonal of L
         // for (int i = 0; i < n; i++) {
