@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
                     continue;
                 }
                 calc_row(i, n, base_buf, cur_buf);
-                update_row(i, k, n, cur_buf, L, U);
+                update_row(i, k, n, cur_buf, U);
             }
         }
 
