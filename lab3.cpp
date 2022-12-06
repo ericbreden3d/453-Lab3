@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 
                 // send row i if haven't sent already then current row k
                 MPI_Request req1, req2;
-                if (k < num_procs - 1) {
+                if (k - 1 < num_procs) {
                     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
                 }
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
                 }
                             
                 // receive base row for iteration i if haven't already
-                if (k < num_procs - 1) {
+                if (k - 1 < num_procs) {
                     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
                     // if (this_rank == 2) {
                     //     cout << "->";
