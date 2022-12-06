@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
                 // Then set to 0 in row and add row to U (A becomes U)
                 update_row(i, k, n, cur_buf, L, A);
                 
+                cout << "Child update\n";
                 L.print();
                 A.print();
             }
