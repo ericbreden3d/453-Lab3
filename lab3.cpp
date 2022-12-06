@@ -119,7 +119,8 @@ int main(int argc, char** argv) {
                 int k = child_rows[child_ind];
                 int dest = (k - 1) % num_procs;
                 MPI_Wait(&reqs[k], &stat);  // ensure received
-                update_row(i, k, n, cur_buf, L, A);
+                update_row(i, k, n, child_data[k], L, A);
+            }
 
             // root calculations (maybe move above receives)
             for (int j = 0; j < root_ind; j++) {
