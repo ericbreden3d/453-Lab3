@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         Matrix A(n);
         A.fill_rand(-1);
         Matrix U = A;  // original A is modified into U
-        U.print();
+        // U.print();
         // Matrix L(n);   // matrix L not needed for finding determinant
 
         MPI_Barrier(MPI_COMM_WORLD);
