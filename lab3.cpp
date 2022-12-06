@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
             A.get_row(i, base_buf);
 
             // distribute
-            int root_rows[n - 1] = {};
-            int base_sent[num_procs] = {};
+            int root_rows[n - 1] = {0};
+            int base_sent[num_procs] = {0};
             int root_ind = 0;
             for (int k = i + 1; k < n; k++) {
                 if (A(i, k) == 0) {
@@ -110,17 +110,17 @@ int main(int argc, char** argv) {
             }
 
             // root calculations (maybe move above receives)
-            // for (int j = 0; j < root_ind; j++) {
-            //     int k = root_rows[j];
-            //     // cout << "k: " << k << endl;
-            //     float cur_buf[n];
-            //     A.get_row(k, cur_buf);
-            //     calc_row(i, n, base_buf, cur_buf);
-            //     update_row(i, k, n, cur_buf, L, A);
+            for (int j = 0; j < root_ind; j++) {
+                int k = root_rows[j];
+                // cout << "k: " << k << endl;
+                float cur_buf[n];
+                A.get_row(k, cur_buf);
+                calc_row(i, n, base_buf, cur_buf);
+                update_row(i, k, n, cur_buf, L, A);
 
-            //     // L.print();
-            //     // A.print();
-            // }
+                // L.print();
+                // A.print();
+            }
         }
 
         // add 1s to diagonal of L
