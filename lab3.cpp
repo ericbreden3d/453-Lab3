@@ -110,17 +110,17 @@ int main(int argc, char** argv) {
             }
 
             // root calculations (maybe move above receives)
-            for (int j = 0; j < root_ind; j++) {
-                int k = root_rows[j];
-                // cout << "k: " << k << endl;
-                float cur_buf[n];
-                A.get_row(k, cur_buf);
-                calc_row(i, n, base_buf, cur_buf);
-                update_row(i, k, n, cur_buf, L, A);
+            // for (int j = 0; j < root_ind; j++) {
+            //     int k = root_rows[j];
+            //     // cout << "k: " << k << endl;
+            //     float cur_buf[n];
+            //     A.get_row(k, cur_buf);
+            //     calc_row(i, n, base_buf, cur_buf);
+            //     update_row(i, k, n, cur_buf, L, A);
 
-                // L.print();
-                // A.print();
-            }
+            //     // L.print();
+            //     // A.print();
+            // }
         }
 
         // add 1s to diagonal of L
@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
                 
                 MPI_Request req;
                 MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-                // MPI_Wait(&req, &stat);
+                MPI_Wait(&req, &stat);
             }
         }
     }
