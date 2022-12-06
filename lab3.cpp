@@ -46,14 +46,14 @@ int main(int argc, char** argv) {
         // algo
         Matrix L(n);
         for (int i = 0; i < n - 1; i++) {
-            // get base row i for this iter
+            // get base row i and broadcast
             float base_buf[n];
             A.get_row(i, base_buf);
-            if (base_buf[i] == 0) {
-                cout << "BAD ZERO" << endl;
-            }
-
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
+
+            // if (base_buf[i] == 0) {
+            //     cout << "BAD ZERO" << endl;
+            // }
 
             // distribute
             int base_sent[num_procs] = {};
@@ -78,54 +78,41 @@ int main(int argc, char** argv) {
                 A.get_row(k, cur_buf);
 
                 // send row i if haven't sent already then current row k
-                MPI_Request req;
                 // if (!base_sent[dest]) {
                 //     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
                 //     base_sent[dest] = 1;
                 // }
+                MPI_Request req;
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req);
+                MPI_Wait(&req, &stat);
                 
                 // ensure buffers copied before they go out of scope
                 // MPI_Wait(&req1, &stat);
-                MPI_Wait(&req, &stat);
             }
 
-            // loop -> recv and update
+            // async recv
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[child_ind];
-                int dest = (k - 1) % num_procs;
+                int src = (k - 1) % num_procs;
 
                 // first elem of row sent to child already 0, so it will not respond
-                if (A(k, i) == 0 || dest == 0) {
-                    // cout << "ZERO" << endl;
-                    continue;
+                if (A(k, i) != 0) {
+                    MPI_Irecv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &reqs[k]);
                 }
-                
-                // receive modified row
-                // float cur_buf[n];
-                // cout << "root waiting on " << dest << endl;
-                MPI_Irecv(child_data[k], n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &reqs[k]);
-                // cout << "root received " << dest << endl;
-
-                // update L with multiplier stored at row[i].
-                // Then set to 0 in row and add row to U (A becomes U)
-                // update_row(i, k, n, cur_buf, L, A);
-                
-                // L.print();
-                // A.print();
             }
 
+            // update with child data
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[child_ind];
-                int dest = (k - 1) % num_procs;
-                MPI_Wait(&reqs[k], &stat);  // ensure received
-                update_row(i, k, n, child_data[k], L, A);
+                if (A(k, i) != 0) {
+                    MPI_Wait(&reqs[k], &stat);
+                    update_row(i, k, n, child_data[k], L, A);
+                }
             }
 
-            // root calculations (maybe move above receives)
+            // update (after calc) with root data
             for (int j = 0; j < root_ind; j++) {
                 int k = root_rows[j];
-                // cout << "k: " << k << endl;
                 float cur_buf[n];
                 A.get_row(k, cur_buf);
                 if (cur_buf[i] == 0) {
@@ -133,9 +120,6 @@ int main(int argc, char** argv) {
                 }
                 calc_row(i, n, base_buf, cur_buf);
                 update_row(i, k, n, cur_buf, L, A);
-
-                // L.print();
-                // A.print();
             }
         }
 
