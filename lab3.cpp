@@ -77,16 +77,16 @@ int main(int argc, char** argv) {
                 A.get_row(k, cur_buf);
 
                 // send row i if haven't sent already then current row k
-                MPI_Request req1, req2;
+                MPI_Request req;
                 // if (!base_sent[dest]) {
                 //     MPI_Isend(base_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req1);
                 //     base_sent[dest] = 1;
                 // }
-                MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
+                MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req);
                 
                 // ensure buffers copied before they go out of scope
                 // MPI_Wait(&req1, &stat);
-                MPI_Wait(&req2, &stat);
+                // MPI_Wait(&req, &stat);
             }
 
             // loop -> recv and update
