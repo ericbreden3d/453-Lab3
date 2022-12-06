@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
                     continue;
                 } 
 
-                int dest = k % num_procs - 1;
+                int dest = (k - 1) % num_procs;
 
                 // if root's responsibility, store k
                 if (dest == 0) {
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                int dest = k % num_procs - 1;
+                int dest = (k - 1) % num_procs;
 
                 // if root calculated this root, ignore
                 if (dest == 0) {
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
             float base_buf[n];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
-                int recv_proc = k % num_procs - 1;
+                int recv_proc = (k - 1) % num_procs;
                 if (recv_proc != this_rank) {
                     continue;
                 }
