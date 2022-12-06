@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 
             // async recv using child_rows gathered in last block
             for (int j = 0; j < child_ind; j++) {
-                int k = child_rows[child_ind];
+                int k = child_rows[j];
                 int src = (k - 1) % num_procs;
 
                 // receive response from child with subtracted row and multiplier at i.
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 
             // update U with child data
             for (int j = 0; j < child_ind; j++) {
-                int k = child_rows[child_ind];
+                int k = child_rows[j];
                 if (U(k, i) != 0) {
                     MPI_Wait(&reqs[k], &stat);   // ensure data received
                     update_row(i, k, n, child_data[k], U);
