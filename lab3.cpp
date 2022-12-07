@@ -120,6 +120,7 @@ int main(int argc, char** argv) {
                     update_row(i, k, n, cur_buf, L, A);
                 }
             }
+            MPI_Barrier(MPI_COMM_WORLD);
         }
 
         // float serial_result = U.determinant();
@@ -188,6 +189,8 @@ int main(int argc, char** argv) {
                 MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
             }
+
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
