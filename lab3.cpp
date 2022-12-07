@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
                 cout << "here" << endl;
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
                 MPI_Wait(&reqs[k], &stat);
-                
+
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
                 // received already zeroed row, ignore
@@ -189,7 +189,7 @@ int main(int argc, char** argv) {
             //     MPI_Request req;
             //     MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
             //     MPI_Wait(&req, &stat);
-            }
+            // }
 
             MPI_Barrier(MPI_COMM_WORLD);
         }
