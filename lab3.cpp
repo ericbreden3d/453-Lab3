@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
             int my_rows[n - 1];
             int my_ind = 0;
             float my_data[n - 1][n];
-            MPI_Requests reqs[n - 1];
+            MPI_Request reqs[n - 1];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
@@ -158,6 +158,7 @@ int main(int argc, char** argv) {
 
             for (int j = 0; j < my_ind; j++) {
                 int k = my_rows[j];
+                MPI_Wait(&reqs[k], &stat);
 
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
