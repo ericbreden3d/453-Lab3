@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
             int root_ind = 0;
             int child_rows[n - 1];
             int child_ind = 0;
-            float child_data[n - 1][n];
+            float child_data[n][n];
             for (int k = i + 1; k < n; k++) {
 
                 int dest = (k - 1) % num_procs;
