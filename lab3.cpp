@@ -93,6 +93,7 @@ int main(int argc, char** argv) {
                 }
             }
 
+            // child updats
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[j];
                 MPI_Wait(&reqs[k], &stat);
@@ -109,32 +110,12 @@ int main(int argc, char** argv) {
                     update_row(i, k, n, cur_buf, U);
                 }
             }
-
-            // loop -> recv and update
-            // for (int k = i + 1; k < n; k++) {
-            //     int dest = (k - 1) % num_procs;
-            //     if (U(k, i) == 0 || dest == 0) {
-            //         continue;
-            //     }
-                
-            //     // receive modified row
-            //     float cur_buf[n];
-            //     // cout << "root waiting on " << dest << endl;
-            //     MPI_Recv(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &stat);
-            //     // cout << "root received " << dest << endl;
-
-            //     // update L with multiplier stored at row[i].
-            //     // Then set to 0 in row and add row to U (A becomes U)
-            //     update_row(i, k, n, cur_buf, U);
-            // }
-
-            // MPI_Barrier(MPI_COMM_WORLD);
         }
 
-        // float serial_result = U.determinant();
-        // float parallel_result = A.determinant();
-        // cout << "Serial Result: " << serial_result << endl;
-        // cout << "Parallel Result: " << parallel_result << endl;
+        float serial_result = A.determinant();
+        float parallel_result = U.determinant();
+        cout << "Serial Result: " << serial_result << endl;
+        cout << "Parallel Result: " << parallel_result << endl;
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
