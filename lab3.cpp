@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
                 if (recv_proc == this_rank) {
-                    my_rows[my_ind] = k;
+                    my_rows[my_ind++] = k;
                 } else {
                     continue;
                 }
@@ -153,9 +153,30 @@ int main(int argc, char** argv) {
                 // cout << "child " << this_rank << " waiting " << i << ",s " << k << endl;
                 // cout << "here" << endl;
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
-                MPI_Wait(&reqs[k], &stat);
+                // MPI_Wait(&reqs[k], &stat);
 
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
+
+                // // received already zeroed row, ignore
+                // if (my_data[k][i] == 0) {
+                //     continue;
+                // }
+
+                // // calculate multiplier, subtract row, and send back
+                // calc_row(i, n, base_buf, my_data[k]);
+                
+                // MPI_Request req;
+                // MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+                // MPI_Wait(&req, &stat);
+                
+            }
+
+            for (int j = 0; j < my_ind; j++) {
+                int k = my_rows[j];
+                MPI_Status s;
+                cout << "waiting"<< endl;
+                // MPI_Wait(&reqs[k], &s);
+                cout << "waited" << endl;
 
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
@@ -168,28 +189,7 @@ int main(int argc, char** argv) {
                 MPI_Request req;
                 MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
-                
             }
-
-            // for (int j = 0; j < my_ind; j++) {
-            //     int k = my_rows[j];
-            //     MPI_Status s;
-            //     cout << "waiting"<< endl;
-            //     // MPI_Wait(&reqs[k], &s);
-            //     cout << "waited" << endl;
-
-            //     // received already zeroed row, ignore
-            //     if (my_data[k][i] == 0) {
-            //         continue;
-            //     }
-
-            //     // calculate multiplier, subtract row, and send back
-            //     calc_row(i, n, base_buf, my_data[k]);
-                
-            //     MPI_Request req;
-            //     MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-            //     MPI_Wait(&req, &stat);
-            // }
 
             MPI_Barrier(MPI_COMM_WORLD);
         }
