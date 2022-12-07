@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         cout << "n = " << n << endl;
         Matrix A(n);
         A.fill_rand(-1);
-        Matrix U = A;
+        // Matrix U = A;
         // A.print();
         start = MPI_Wtime();
 
