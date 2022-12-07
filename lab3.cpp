@@ -156,10 +156,12 @@ int main(int argc, char** argv) {
                 for (int l = 0; l < n; l++) {
                     cout << my_data[k][l];
                 }
+                cout << endl;
                 calc_row(i, n, base_buf, my_data[k]);
                 for (int l = 0; l < n; l++) {
                     cout << my_data[k][l];
                 }
+                cout << endl;
                 
                 MPI_Request req;
                 MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
