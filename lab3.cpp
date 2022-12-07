@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
         // create initial randomized matrix of size n
         cout << "n = " << n << endl;
         Matrix A(n);
-        A.fill_rand(3);
+        A.fill_rand(-1);
         Matrix U = A;
         // Matrix U = A;
         // A.print();
@@ -143,9 +143,26 @@ int main(int argc, char** argv) {
                 // cout << "here" << endl;
                 // reqs[k] = MPI_Request();
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
-                MPI_Wait(&reqs[k], &stat);
+                // MPI_Wait(&reqs[k], &stat);
 
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
+
+                // received already zeroed row, ignore
+                
+                // if (my_data[k][i] == 0) {
+                //     continue;
+                // }
+
+                // // calculate multiplier, subtract row, and send back
+                // calc_row(i, n, base_buf, my_data[k]);
+                
+                // MPI_Request req;
+                // MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
+            }
+
+            for (int j = 0; j < my_ind; j++) {
+                int k = my_rows[j];
+                MPI_Wait(&reqs[k], &stat);
 
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
@@ -155,24 +172,8 @@ int main(int argc, char** argv) {
                 // calculate multiplier, subtract row, and send back
                 calc_row(i, n, base_buf, my_data[k]);
                 
-                MPI_Request req;
                 MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
             }
-
-            // for (int j = 0; j < my_ind; j++) {
-            //     int k = my_rows[j];
-            //     // MPI_Wait(&reqs[k], &stat);
-
-            //     // received already zeroed row, ignore
-            //     if (my_data[k][i] == 0) {
-            //         continue;
-            //     }
-
-            //     // calculate multiplier, subtract row, and send back
-            //     calc_row(i, n, base_buf, my_data[k]);
-                
-            //     MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
-            // }
 
             // MPI_Barrier(MPI_COMM_WORLD);
         }
