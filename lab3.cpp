@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
                 cout << "here" << endl;
                 reqs[k] = MPI_Request();
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
-                MPI_Wait(&reqs[k], &stat);
+                // MPI_Wait(&reqs[k], &stat);
 
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
@@ -175,8 +175,8 @@ int main(int argc, char** argv) {
             for (int j = 0; j < my_ind; j++) {
                 int k = my_rows[j];
                 cout << "waiting"<< endl;
-                // MPI_Wait(&reqs[k], &stat);
-                // cout << "waited" << endl;
+                MPI_Wait(&reqs[k], &stat);
+                cout << "waited" << endl;
 
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
