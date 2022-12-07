@@ -154,11 +154,11 @@ int main(int argc, char** argv) {
 
                 // calculate multiplier, subtract row, and send back
                 for (int l = 0; l < n; l++) {
-                    cout << my_data[l];
+                    cout << my_data[k][l];
                 }
                 calc_row(i, n, base_buf, my_data[k]);
                 for (int l = 0; l < n; l++) {
-                    cout << my_data[l];
+                    cout << my_data[k][l];
                 }
                 
                 MPI_Request req;
