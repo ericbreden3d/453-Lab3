@@ -73,10 +73,10 @@ int main(int argc, char** argv) {
 
                 // send row i if haven't sent already then current row k
                 MPI_Request req;
-                MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req);
+                MPI_Send(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD);
                 
                 // ensure buffers copied before they go out of scope
-                MPI_Wait(&req, &stat);
+                // MPI_Wait(&req, &stat);
             }
 
             // root calculations (maybe move above receives)
@@ -155,8 +155,8 @@ int main(int argc, char** argv) {
                 calc_row(i, n, base_buf, my_data[k]);
                 
                 MPI_Request req;
-                MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-                MPI_Wait(&req, &stat);
+                MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
+                // MPI_Wait(&req, ?&stat);
 
             }
 
