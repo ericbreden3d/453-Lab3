@@ -173,9 +173,8 @@ int main(int argc, char** argv) {
 
             for (int j = 0; j < my_ind; j++) {
                 int k = my_rows[j];
-                MPI_Status s;
                 cout << "waiting"<< endl;
-                // MPI_Wait(&reqs[k], &s);
+                MPI_Wait(&reqs[k], &stat);
                 cout << "waited" << endl;
 
                 // received already zeroed row, ignore
