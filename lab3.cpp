@@ -157,27 +157,6 @@ int main(int argc, char** argv) {
                 MPI_Wait(&reqs[k], &stat);
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
-                // // received already zeroed row, ignore
-                // if (my_data[k][i] == 0) {
-                //     continue;
-                // }
-
-                // // calculate multiplier, subtract row, and send back
-                // calc_row(i, n, base_buf, my_data[k]);
-                
-                // MPI_Request req;
-                // MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-                // MPI_Wait(&req, &stat);
-                
-            }
-
-            for (int j = 0; j < my_ind; j++) {
-                int k = my_rows[j];
-                MPI_Status s;
-                cout << "waiting"<< endl;
-                // MPI_Wait(&reqs[k], &s);
-                cout << "waited" << endl;
-
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
                     continue;
@@ -189,6 +168,27 @@ int main(int argc, char** argv) {
                 MPI_Request req;
                 MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
+                
+            }
+
+            // for (int j = 0; j < my_ind; j++) {
+            //     int k = my_rows[j];
+            //     MPI_Status s;
+            //     cout << "waiting"<< endl;
+            //     // MPI_Wait(&reqs[k], &s);
+            //     cout << "waited" << endl;
+
+            //     // received already zeroed row, ignore
+            //     if (my_data[k][i] == 0) {
+            //         continue;
+            //     }
+
+            //     // calculate multiplier, subtract row, and send back
+            //     calc_row(i, n, base_buf, my_data[k]);
+                
+            //     MPI_Request req;
+            //     MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+            //     MPI_Wait(&req, &stat);
             }
 
             MPI_Barrier(MPI_COMM_WORLD);
