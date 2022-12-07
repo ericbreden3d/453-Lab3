@@ -147,13 +147,13 @@ int main(int argc, char** argv) {
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
                 // received already zeroed row, ignore
-
-                // if (my_data[k][i] == 0) {
-                //     continue;
-                // }
+                
+                if (my_data[k][i] == 0) {
+                    continue;
+                }
 
                 // calculate multiplier, subtract row, and send back
-                calc_row(i, n, base_buf, my_data[k]);
+                // calc_row(i, n, base_buf, my_data[k]);
                 
                 MPI_Request req;
                 MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
