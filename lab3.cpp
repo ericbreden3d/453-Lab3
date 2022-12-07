@@ -171,7 +171,7 @@ int main(int argc, char** argv) {
                 // calculate multiplier, subtract row, and send back
                 calc_row(i, n, base_buf, my_data[k]);
                 
-                MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
             }
 
             // MPI_Barrier(MPI_COMM_WORLD);
