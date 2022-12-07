@@ -41,6 +41,9 @@ int main(int argc, char** argv) {
         A.fill_rand(-1);
         Matrix U = A;
         // A.print();
+
+        MPI_Barrier(MPI_COMM_WORLD);
+
         start = MPI_Wtime();
 
         // algo
@@ -128,6 +131,7 @@ int main(int argc, char** argv) {
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
+        MPI_Barrier(MPI_COMM_WORLD);
         // child logic
         for (int i = 0; i < n - 1; i++) {
             float base_buf[n];
