@@ -41,9 +41,6 @@ int main(int argc, char** argv) {
         A.fill_rand(-1);
         Matrix U = A;
         // A.print();
-
-        MPI_Barrier(MPI_COMM_WORLD);
-
         start = MPI_Wtime();
 
         // algo
@@ -84,7 +81,7 @@ int main(int argc, char** argv) {
                 MPI_Isend(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD, &req2);
                 
                 // ensure buffers copied before they go out of scope
-                MPI_Wait(&req1, &stat);
+                // MPI_Wait(&req1, &stat);
                 MPI_Wait(&req2, &stat);
             }
 
@@ -131,7 +128,6 @@ int main(int argc, char** argv) {
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
 
     } else {
-        MPI_Barrier(MPI_COMM_WORLD);
         // child logic
         for (int i = 0; i < n - 1; i++) {
             float base_buf[n];
