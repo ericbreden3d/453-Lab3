@@ -133,38 +133,42 @@ int main(int argc, char** argv) {
         for (int i = 0; i < n - 1; i++) {
             float base_buf[n];
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
-            // int base_recvd = 0;
+
+            int my_rows[n - 1];
+            int my_ind = 0;
+            float my_data[n - 1][n];
+            MPI_Requests reqs[n - 1];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
                 int recv_proc = (k - 1) % num_procs;
-                if (recv_proc != this_rank) {
+                if (recv_proc == this_rank) {
+                    my_rows[my_ind] = k;
+                } else {
                     continue;
                 }
-                            
-                // receive base row for iteration i if haven't already
-                // if (!base_recvd) {
-                //     // cout << "child waiting " << this_rank << " on base " << i << " for " << i << ", " << k << endl;
-                //     MPI_Recv(base_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
-                //     // cout << "child " << this_rank << " received " << k << endl;
-                //     base_recvd = 1;
-                // }
 
                 // receicve cur row k
-                float cur_buf[n];
-                // cout << "child " << this_rank << " waiting " << i << ", " << k << endl;
-                MPI_Recv(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &stat);
+                // float cur_buf[n];
+                // cout << "child " << this_rank << " waiting " << i << ",s " << k << endl;
+                MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
+                
+            }
+
+            for (int j = 0; j < my_ind; j++) {
+                int k = my_rows[j];
+
                 // received already zeroed row, ignore
-                if (cur_buf[i] == 0) {
+                if (my_data[k][i] == 0) {
                     continue;
                 }
 
                 // calculate multiplier, subtract row, and send back
-                calc_row(i, n, base_buf, cur_buf);
+                calc_row(i, n, base_buf, my_data[k]);
                 
                 MPI_Request req;
-                MPI_Isend(cur_buf, n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+                MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
             }
         }
