@@ -157,10 +157,12 @@ int main(int argc, char** argv) {
                     cout << my_data[k][l];
                 }
                 cout << endl;
+                cout << endl;
                 calc_row(i, n, base_buf, my_data[k]);
                 for (int l = 0; l < n; l++) {
                     cout << my_data[k][l];
                 }
+                cout << endl;
                 cout << endl;
                 
                 MPI_Request req;
