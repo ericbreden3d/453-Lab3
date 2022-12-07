@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 
             int my_rows[n - 1];
             int my_ind = 0;
-            float my_data[n - 1][n];
+            float my_data[n][n];
             MPI_Request reqs[n];
             for (int k = i + 1; k < n; k++) {
                 // dont't proceed unless this proc is needed
