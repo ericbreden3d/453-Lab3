@@ -153,11 +153,17 @@ int main(int argc, char** argv) {
                 }
 
                 // calculate multiplier, subtract row, and send back
+                for (int l = 0; l < n; l++) {
+                    cout << my_data[l];
+                }
                 calc_row(i, n, base_buf, my_data[k]);
+                for (int l = 0; l < n; l++) {
+                    cout << my_data[l];
+                }
                 
                 MPI_Request req;
                 MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
-                MPI_Wait(&req, ?&stat);
+                // MPI_Wait(&req, &stat);
 
             }
 
