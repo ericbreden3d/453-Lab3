@@ -151,6 +151,7 @@ int main(int argc, char** argv) {
                 // receicve cur row k
                 // float cur_buf[n];
                 // cout << "child " << this_rank << " waiting " << i << ",s " << k << endl;
+                cout << "here" << endl;
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
                 // MPI_Wait(&reqs[k], &stat);
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
@@ -166,7 +167,6 @@ int main(int argc, char** argv) {
                 // MPI_Request req;
                 // MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 // MPI_Wait(&req, &stat);
-
                 
             }
 
