@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
                 update_row(i, k, n, cur_buf, L, A);
             }
 
-            MPI_Barrier(MPI_COMM_WORLD);
+            // MPI_Barrier(MPI_COMM_WORLD);
         }
 
         // float serial_result = U.determinant();
@@ -153,22 +153,10 @@ int main(int argc, char** argv) {
                 }
 
                 // calculate multiplier, subtract row, and send back
-                for (int l = 0; l < n; l++) {
-                    cout << my_data[k][l];
-                }
-                cout << endl;
-                cout << endl;
                 calc_row(i, n, base_buf, my_data[k]);
-                for (int l = 0; l < n; l++) {
-                    cout << my_data[k][l];
-                }
-                cout << endl;
-                cout << endl;
                 
                 MPI_Request req;
                 MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
-                // MPI_Wait(&req, &stat);
-
             }
 
             // for (int j = 0; j < my_ind; j++) {
@@ -190,7 +178,7 @@ int main(int argc, char** argv) {
             //     MPI_Wait(&req, &stat);
             // }
 
-            MPI_Barrier(MPI_COMM_WORLD);
+            // MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
