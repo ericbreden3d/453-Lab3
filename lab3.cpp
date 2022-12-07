@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
 
             for (int j = 0; j < my_ind; j++) {
                 int k = my_rows[j];
-                // MPI_Wait(&reqs[k], &stat);
+                MPI_Wait(&reqs[k], &stat);
 
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
