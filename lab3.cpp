@@ -79,18 +79,16 @@ int main(int argc, char** argv) {
                 MPI_Wait(&req, &stat);
             }
 
-            // async recv using child_rows gathered in last block
-            // for (int j = 0; j < root_ind; j++) {
-            //     int k = root_rows[j];
-            //     int src = (k - 1) % num_procs;
-
-            //     // receive response from child with subtracted row and multiplier at i.
-            //     // if ith elem was already 0, child is set to not respond
-            //     if (A(k, i) != 0) {
-            //         // MPI_Irecv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &reqs[k]);
-            //         MPI_Recv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &stat);
-            //     }
-            // }
+            // root calculations (maybe move above receives)
+            for (int j = 0; j < root_ind; j++) {
+                int k = root_rows[j];
+                float cur_buf[n];
+                A.get_row(k, cur_buf);
+                if (cur_buf[i] != 0) {
+                    calc_row(i, n, base_buf, cur_buf);
+                    update_row(i, k, n, cur_buf, L, A);
+                }
+            }
 
             // loop -> recv and update
             for (int k = i + 1; k < n; k++) {
@@ -110,16 +108,6 @@ int main(int argc, char** argv) {
                 update_row(i, k, n, cur_buf, L, A);
             }
 
-            // root calculations (maybe move above receives)
-            for (int j = 0; j < root_ind; j++) {
-                int k = root_rows[j];
-                float cur_buf[n];
-                A.get_row(k, cur_buf);
-                if (cur_buf[i] != 0) {
-                    calc_row(i, n, base_buf, cur_buf);
-                    update_row(i, k, n, cur_buf, L, A);
-                }
-            }
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
@@ -158,6 +146,25 @@ int main(int argc, char** argv) {
 
                 // cout << "child " << this_rank << " received " << i << ", " << k << endl;
 
+                // // received already zeroed row, ignore
+                // if (my_data[k][i] == 0) {
+                //     continue;
+                // }
+
+                // // calculate multiplier, subtract row, and send back
+                // calc_row(i, n, base_buf, my_data[k]);
+                
+                // MPI_Request req;
+                // MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
+                // MPI_Wait(&req, &stat);
+            }
+
+            for (int j = 0; j < my_ind; j++) {
+                int k = my_rows[j];
+                // cout << "waiting"<< endl;
+                // MPI_Wait(&reqs[k], &stat);
+                // cout << "waited" << endl;
+
                 // received already zeroed row, ignore
                 if (my_data[k][i] == 0) {
                     continue;
@@ -169,27 +176,7 @@ int main(int argc, char** argv) {
                 MPI_Request req;
                 MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
                 MPI_Wait(&req, &stat);
-                
             }
-
-            // for (int j = 0; j < my_ind; j++) {
-            //     int k = my_rows[j];
-            //     cout << "waiting"<< endl;
-            //     MPI_Wait(&reqs[k], &stat);
-            //     cout << "waited" << endl;
-
-            //     // received already zeroed row, ignore
-            //     if (my_data[k][i] == 0) {
-            //         continue;
-            //     }
-
-            //     // calculate multiplier, subtract row, and send back
-            //     calc_row(i, n, base_buf, my_data[k]);
-                
-            //     MPI_Request req;
-            //     MPI_Isend(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &req);
-            //     MPI_Wait(&req, &stat);
-            // }
 
             MPI_Barrier(MPI_COMM_WORLD);
         }
