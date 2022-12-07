@@ -157,7 +157,6 @@ int main(int argc, char** argv) {
 
                 // received already zeroed row, ignore
                 if (cur_buf[i] == 0) {
-                    cout << "child " << this_rank << ": already zeroed at " << i << ", " << k << endl;
                     continue;
                 }
 
