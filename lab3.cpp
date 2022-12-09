@@ -92,13 +92,6 @@ int main(int argc, char** argv) {
                 }
             }
 
-            // update U based on child response
-            for (int j = 0; j < child_ind; j++) {
-                int k = child_rows[j];
-                MPI_Wait(&reqs[k], &stat);
-                update_row(i, k, n, child_data[k], U);
-            }
-
             // calc root rows and update U
             for (int j = 0; j < root_ind; j++) {
                 int k = root_rows[j];
@@ -109,16 +102,24 @@ int main(int argc, char** argv) {
                     update_row(i, k, n, cur_buf, U);
                 }
             }
+            
+            // update U based on child response
+            for (int j = 0; j < child_ind; j++) {
+                int k = child_rows[j];
+                MPI_Wait(&reqs[k], &stat);
+                update_row(i, k, n, child_data[k], U);
+            }
+
         }
 
         //
         // Results
         //
-        // float serial_result = A.determinant();
-        // float parallel_result = U.determinant();
-        // cout << "Serial Result: " << serial_result << endl;
-        // cout << "Parallel Result: " << parallel_result << endl;
         cout << "Parallel runtime: " << MPI_Wtime() - start << endl;
+        float serial_result = A.determinant();
+        float parallel_result = U.determinant();
+        cout << "Serial Result: " << serial_result << endl;
+        cout << "Parallel Result: " << parallel_result << endl;
 
     } else {
         // child logic
@@ -147,7 +148,7 @@ int main(int argc, char** argv) {
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
             }
 
-            // 
+            //  calculate and return to root if not already zeroed
             for (int j = 0; j < my_ind; j++) {
                 // wait for non-blocking recv to complete
                 int k = my_rows[j];
