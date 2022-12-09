@@ -33,39 +33,39 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &this_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
+    // root logic
     if (this_rank == 0) {
         // create initial randomized matrix of size n
         cout << "n = " << n << endl;
         Matrix A(n);
         A.fill_rand(-1);
         Matrix U = A;
-        // Matrix U = A;
-        // A.print();
-        // Matrix L(n);
 
         // start timer
         start = MPI_Wtime();
 
-        // algo
+        // Outermost loop: n - 1 rounds
         for (int i = 0; i < n - 1; i++) {
             
-            // get base row i for this iter
+            // get base row i for this iter and broadcast
             float base_buf[n];
             U.get_row(i, base_buf);
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
-            // distribute
-            int root_rows[n - 1] = {};
-            int root_ind = 0;
-            int child_rows[n - 1];
-            int child_ind = 0;
-            float child_data[n][n];
-            MPI_Request reqs[n];
-            for (int k = i + 1; k < n; k++) {
+            // variables
+            int root_rows[n - 1] = {};   // rows that root is responsible for in this iter
+            int root_ind = 0;            // index for root_rows
+            int child_rows[n - 1];       // rows that children are responsible for in this iter
+            int child_ind = 0;           // index for child_rows
+            float child_data[n][n];      // stores child data indexed by n possible values of k
+            MPI_Request reqs[n];         // request structures to allow for async receive/wait calls
 
+            // distribute rows for round + 1 to n
+            for (int k = i + 1; k < n; k++) {
+                // map k to processor
                 int dest = (k - 1) % num_procs;
 
-                // if root's responsibility, store k
+                // determine who is responsible for kth row and store val
                 if (dest == 0) {
                     root_rows[root_ind++] = k;
                     continue;
@@ -73,34 +73,33 @@ int main(int argc, char** argv) {
                     child_rows[child_ind++] = k;
                 }
 
+                // send kth row to child
                 float cur_buf[n];
                 U.get_row(k, cur_buf);
-
-                // send row i if haven't sent already then current row k
                 MPI_Send(cur_buf, n, MPI_FLOAT, dest, 0, MPI_COMM_WORLD);
             }
 
             // async recv using child_rows gathered in last block
             for (int j = 0; j < child_ind; j++) {
+                // calculate source based ons tored k val
                 int k = child_rows[j];
                 int src = (k - 1) % num_procs;
 
-                // receive response from child with subtracted row and multiplier at i.
+                // async receive response from child with subtracted row and multiplier at i.
                 // if ith elem was already 0, child is set to not respond
                 if (U(k, i) != 0) {
-                    // MPI_Irecv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &reqs[k]);
                     MPI_Irecv(child_data[k], n, MPI_FLOAT, src, 0, MPI_COMM_WORLD, &reqs[k]);
                 }
             }
 
-            // child updats
+            // update U based on child response
             for (int j = 0; j < child_ind; j++) {
                 int k = child_rows[j];
                 MPI_Wait(&reqs[k], &stat);
                 update_row(i, k, n, child_data[k], U);
             }
 
-            // root calculations (maybe move above receives)
+            // calc root rows and update U
             for (int j = 0; j < root_ind; j++) {
                 int k = root_rows[j];
                 float cur_buf[n];
@@ -112,6 +111,9 @@ int main(int argc, char** argv) {
             }
         }
 
+        //
+        // Results
+        //
         // float serial_result = A.determinant();
         // float parallel_result = U.determinant();
         // cout << "Serial Result: " << serial_result << endl;
@@ -121,15 +123,19 @@ int main(int argc, char** argv) {
     } else {
         // child logic
         for (int i = 0; i < n - 1; i++) {
+            // receive broadcast base row i for this iter
             float base_buf[n];
             MPI_Bcast(base_buf, n, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
-            int my_rows[n - 1];
-            int my_ind = 0;
-            float my_data[n][n];
-            MPI_Request reqs[n];
+            // variables
+            int my_rows[n - 1];   // this child is responsible for these rows
+            int my_ind = 0;       // index for my_rows
+            float my_data[n][n];  // holds data indexable by k
+            MPI_Request reqs[n];  // request structures for async receive/wait
+
+            // receive from root if k values maps to this processor
             for (int k = i + 1; k < n; k++) {
-                // dont't proceed unless this proc is needed
+                // store k val and calc after receiving all rows for this round
                 int recv_proc = (k - 1) % num_procs;
                 if (recv_proc == this_rank) {
                     my_rows[my_ind++] = k;
@@ -137,30 +143,13 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                // receicve cur row k
-                // float cur_buf[n];
-                // cout << "child " << this_rank << " waiting " << i << ",s " << k << endl;
-                // cout << "here" << endl;
-                // reqs[k] = MPI_Request();
+                // async receive row
                 MPI_Irecv(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD, &reqs[k]);
-                // MPI_Wait(&reqs[k], &stat);
-
-                // cout << "child " << this_rank << " received " << i << ", " << k << endl;
-
-                // received already zeroed row, ignore
-                
-                // if (my_data[k][i] == 0) {
-                //     continue;
-                // }
-
-                // // calculate multiplier, subtract row, and send back
-                // calc_row(i, n, base_buf, my_data[k]);
-                
-                // MPI_Request req;
-                // MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
             }
 
+            // 
             for (int j = 0; j < my_ind; j++) {
+                // wait for non-blocking recv to complete
                 int k = my_rows[j];
                 MPI_Wait(&reqs[k], &stat);
 
@@ -169,13 +158,10 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                // calculate multiplier, subtract row, and send back
+                // calculate multiplier, subtract row, and send back to root
                 calc_row(i, n, base_buf, my_data[k]);
-                
                 MPI_Send(my_data[k], n, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
             }
-
-            // MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
